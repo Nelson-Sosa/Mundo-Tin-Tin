@@ -356,7 +356,7 @@ export default function ProductDetail() {
             <Clock className="h-4 w-4" />
             Información del Sistema
           </h3>
-          <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+            <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             <div>
               <p className="text-xs text-gray-400">Creado</p>
               <p className="mt-0.5 text-gray-700">{formatDate(product.createdAt)}</p>
@@ -364,12 +364,6 @@ export default function ProductDetail() {
             <div>
               <p className="text-xs text-gray-400">Actualizado</p>
               <p className="mt-0.5 text-gray-700">{formatDate(product.updatedAt)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400">Creado por</p>
-              <p className="mt-0.5 font-mono text-xs text-gray-700">
-                {product.createdBy || "—"}
-              </p>
             </div>
           </div>
         </div>
