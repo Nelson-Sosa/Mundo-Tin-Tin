@@ -1,4 +1,6 @@
-export default function StatCard({ title, value, icon: Icon, accent = "primary" }) {
+import { formatCurrency } from "../../utils/formatCurrency";
+
+export default function StatCard({ title, value, icon: Icon, accent = "primary", kind = "number" }) {
   const isPlaceholder = value === null || value === undefined;
 
   const variant =
@@ -9,7 +11,8 @@ export default function StatCard({ title, value, icon: Icon, accent = "primary" 
   function format(val) {
     if (isPlaceholder) return "—";
     if (typeof val === "number") {
-      return new Intl.NumberFormat("es-MX").format(val);
+      if (kind === "currency") return formatCurrency(val);
+      return val.toLocaleString("es-PY");
     }
     return val;
   }

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import ProductStatusBadge from "./ProductStatusBadge";
 import { getImageUrl } from "../../services/cloudinary";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 export default function ProductCard({ product, onEdit, onDuplicate, onToggleStatus, onDelete }) {
   const mainImage = getImageUrl(product.images?.[0]);
@@ -41,7 +42,7 @@ export default function ProductCard({ product, onEdit, onDuplicate, onToggleStat
           <p className="mt-0.5 text-xs text-gray-500">{product.categoryName}</p>
           <div className="mt-2 flex items-center gap-3">
             <span className="text-sm font-semibold text-gray-800">
-              ${Number(product.salePrice).toFixed(2)}
+              {formatCurrency(product.salePrice)}
             </span>
             <span
               className={`text-xs font-medium ${

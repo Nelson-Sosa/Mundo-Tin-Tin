@@ -1,6 +1,7 @@
 import { Pencil, Copy, EyeOff, Eye, Trash2, ImageOff } from "lucide-react";
 import ProductStatusBadge from "./ProductStatusBadge";
 import { getImageUrl } from "../../services/cloudinary";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 export default function ProductTable({ products, onEdit, onDuplicate, onToggleStatus, onDelete }) {
   return (
@@ -65,7 +66,7 @@ export default function ProductTable({ products, onEdit, onDuplicate, onToggleSt
                   <span className="text-gray-600">{prod.categoryName}</span>
                 </td>
                 <td className="px-4 py-3.5 font-medium text-gray-800">
-                  ${Number(prod.salePrice).toFixed(2)}
+                  {formatCurrency(prod.salePrice)}
                 </td>
                 <td className="px-4 py-3.5">
                   <span
