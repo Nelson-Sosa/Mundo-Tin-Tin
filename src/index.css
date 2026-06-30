@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #E94F9B;
+  --color-primary-hover: #D83E89;
+  --color-primary-light: #FCE6F1;
+  --color-background-secondary: #FFF7FA;
+  --color-border: #F8D3E4;
+  --color-danger: #FB7185;
+  --color-success: #10B981;
+}
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #F8D3E4 transparent;
+  }
+}
