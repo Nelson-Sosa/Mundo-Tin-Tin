@@ -10,6 +10,7 @@ import {
   validateAttributes,
 } from "../../utils/productValidation";
 import { getCategories } from "../../services/categoryService";
+import { generateSku } from "../../services/productService";
 import ProductGallery from "./ProductGallery";
 import ProductAttributes from "./ProductAttributes";
 
@@ -50,6 +51,7 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
   const [touched, setTouched] = useState({});
   const [categoryList, setCategoryList] = useState(categories || []);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [skuManuallyEdited, setSkuManuallyEdited] = useState(false);
 
   useEffect(() => {
     if (!categories) {
@@ -98,6 +100,23 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
 
   function handleImagesChange(images) {
     setForm((prev) => ({ ...prev, images }));
+  }
+
+  async function handleCategoryChange(categoryId) {
+    handleChange("categoryId", categoryId);
+    setErrors((prev) => ({ ...prev, categoryId: null }));
+
+    if (!initialData && categoryId && !skuManuallyEdited) {
+      const category = categoryList.find((c) => c.id === categoryId);
+      if (category) {
+        try {
+          const sku = await generateSku(category.name);
+          setForm((prev) => ({ ...prev, sku }));
+        } catch {
+          // si falla la generación, el usuario puede ingresarlo manualmente
+        }
+      }
+    }
   }
 
   function handleAttributesChange(attributes) {
@@ -197,10 +216,7 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
             <select
               id="prod-cat"
               value={form.categoryId}
-              onChange={(e) => {
-                handleChange("categoryId", e.target.value);
-                setErrors((prev) => ({ ...prev, categoryId: null }));
-              }}
+              onChange={(e) => handleCategoryChange(e.target.value)}
               onBlur={() => setTouched((prev) => ({ ...prev, categoryId: true }))}
               className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm text-gray-800 transition-colors focus:outline-none focus:ring-2 ${
                 errors.categoryId
@@ -302,14 +318,17 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
                 id="prod-sku"
                 type="text"
                 value={form.sku}
-                onChange={(e) => handleChange("sku", e.target.value)}
+                onChange={(e) => {
+                  handleChange("sku", e.target.value);
+                  setSkuManuallyEdited(true);
+                }}
                 onBlur={() => handleBlur("sku")}
                 className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 ${
                   errors.sku
                     ? "border-red-300 focus:border-red-400 focus:ring-red/20"
                     : "border-gray-200 focus:border-primary focus:ring-primary/20"
                 }`}
-                placeholder="SKU-001"
+                placeholder="Ej: REM-0001"
               />
               {errors.sku && <p className="mt-1 text-xs text-red-500">{errors.sku}</p>}
             </div>

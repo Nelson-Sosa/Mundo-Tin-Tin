@@ -15,6 +15,7 @@ import { db } from "../firebase/firebaseConfig";
 import { uploadImage as cloudinaryUpload } from "./cloudinary";
 import { deleteImage as cloudinaryDelete } from "./cloudinary";
 import { validateProduct } from "../utils/productValidation";
+import { getCategoryPrefix } from "../utils/skuUtils";
 import { getCategories } from "./categoryService";
 
 const COLLECTION = "products";
@@ -166,6 +167,29 @@ export async function uploadImage(file) {
 
 export async function deleteImage(publicId) {
   return cloudinaryDelete(publicId);
+}
+
+export async function getNextSkuNumber(prefix) {
+  const q = query(
+    collection(db, COLLECTION),
+    where("sku", ">=", `${prefix}-`),
+    where("sku", "<", `${prefix}-\uffff`)
+  );
+  const snapshot = await getDocs(q);
+  let max = 0;
+  snapshot.docs.forEach((doc) => {
+    const sku = doc.data().sku || "";
+    const parts = sku.split("-");
+    const num = parseInt(parts[parts.length - 1], 10);
+    if (!isNaN(num) && num > max) max = num;
+  });
+  return max + 1;
+}
+
+export async function generateSku(categoryName) {
+  const prefix = getCategoryPrefix(categoryName);
+  const nextNum = await getNextSkuNumber(prefix);
+  return `${prefix}-${String(nextNum).padStart(4, "0")}`;
 }
 
 async function checkDuplicateInCategory(name, categoryId, excludeId) {
