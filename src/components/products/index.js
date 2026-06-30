@@ -8,3 +8,4 @@ export { default as ProductSearch } from "./ProductSearch";
 export { default as ProductStatusBadge } from "./ProductStatusBadge";
 export { default as DeleteProductDialog } from "./DeleteProductDialog";
 export { default as EmptyProducts } from "./EmptyProducts";
+export { default as StockBadge } from "./StockBadge";

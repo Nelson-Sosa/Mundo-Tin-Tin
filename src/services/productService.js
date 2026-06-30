@@ -10,6 +10,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import { uploadImage as cloudinaryUpload } from "./cloudinary";
@@ -159,6 +160,33 @@ export async function deleteProduct(id) {
     );
   }
   await deleteDoc(doc(db, COLLECTION, id));
+}
+
+export async function checkStockAvailability(productId, quantity) {
+  const product = await getProductById(productId);
+  if (!product) throw new Error("PRODUCT_NOT_FOUND");
+  if (product.stock < quantity) throw new Error("INSUFFICIENT_STOCK");
+  return true;
+}
+
+export async function decrementStock(productId, quantity, userId) {
+  if (quantity <= 0) throw new Error("INVALID_QUANTITY");
+
+  const productRef = doc(db, COLLECTION, productId);
+
+  await runTransaction(db, async (transaction) => {
+    const snap = await transaction.get(productRef);
+    if (!snap.exists()) throw new Error("PRODUCT_NOT_FOUND");
+
+    const currentStock = snap.data().stock ?? 0;
+    if (currentStock < quantity) throw new Error("INSUFFICIENT_STOCK");
+
+    transaction.update(productRef, {
+      stock: currentStock - quantity,
+      updatedAt: serverTimestamp(),
+      updatedBy: userId,
+    });
+  });
 }
 
 export async function uploadImage(file) {

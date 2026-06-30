@@ -21,6 +21,7 @@ import { getCategories } from "../../services/categoryService";
 import { getImageUrl } from "../../services/cloudinary";
 import { formatCurrency } from "../../utils/formatCurrency";
 import ProductStatusBadge from "../../components/products/ProductStatusBadge";
+import StockBadge from "../../components/products/StockBadge";
 import PageContainer from "../../components/layout/PageContainer";
 
 export default function ProductDetail() {
@@ -78,7 +79,7 @@ export default function ProductDetail() {
   const mainImageUrl = getImageUrl(images[selectedImage]);
   const isActive = product.status === "active";
   const isLowStock = product.stock <= product.minimumStock && product.stock > 0;
-  const isOutOfStock = product.stock === 0;
+  const isOutOfStock = product.stock <= 0;
 
   function formatDate(ts) {
     if (!ts) return "—";
@@ -283,16 +284,7 @@ export default function ProductDetail() {
                     >
                       {product.stock}
                     </span>
-                    {isOutOfStock && (
-                      <span className="rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-600">
-                        Agotado
-                      </span>
-                    )}
-                    {isLowStock && !isOutOfStock && (
-                      <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-600">
-                        Stock bajo
-                      </span>
-                    )}
+                    <StockBadge stock={product.stock} minimumStock={product.minimumStock} />
                   </div>
                 </div>
                 <div>

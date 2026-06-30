@@ -1,5 +1,6 @@
 import { Pencil, Copy, EyeOff, Eye, Trash2, ImageOff, Search } from "lucide-react";
 import ProductStatusBadge from "./ProductStatusBadge";
+import StockBadge from "./StockBadge";
 import { getImageUrl } from "../../services/cloudinary";
 import { formatCurrency } from "../../utils/formatCurrency";
 
@@ -33,7 +34,7 @@ export default function ProductTable({ products, onEdit, onDuplicate, onToggleSt
           {products.map((prod) => {
             const mainImage = getImageUrl(prod.images?.[0]);
             const isLowStock = prod.stock <= prod.minimumStock && prod.stock > 0;
-            const isOutOfStock = prod.stock === 0;
+            const isOutOfStock = prod.stock <= 0;
 
             return (
               <tr key={prod.id} className="transition-colors hover:bg-gray-50/50">
@@ -69,17 +70,20 @@ export default function ProductTable({ products, onEdit, onDuplicate, onToggleSt
                   {formatCurrency(prod.salePrice)}
                 </td>
                 <td className="px-4 py-3.5">
-                  <span
-                    className={`text-sm font-medium ${
-                      isOutOfStock
-                        ? "text-red-500"
-                        : isLowStock
-                        ? "text-amber-500"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {prod.stock}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-sm font-medium ${
+                        isOutOfStock
+                          ? "text-red-500"
+                          : isLowStock
+                          ? "text-amber-500"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {prod.stock}
+                    </span>
+                    <StockBadge stock={prod.stock} minimumStock={prod.minimumStock} />
+                  </div>
                 </td>
                 <td className="px-4 py-3.5">
                   <ProductStatusBadge status={prod.status} />

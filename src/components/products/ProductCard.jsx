@@ -8,13 +8,14 @@ import {
   Search,
 } from "lucide-react";
 import ProductStatusBadge from "./ProductStatusBadge";
+import StockBadge from "./StockBadge";
 import { getImageUrl } from "../../services/cloudinary";
 import { formatCurrency } from "../../utils/formatCurrency";
 
 export default function ProductCard({ product, onEdit, onDuplicate, onToggleStatus, onDelete, onViewDetail }) {
   const mainImage = getImageUrl(product.images?.[0]);
   const isLowStock = product.stock <= product.minimumStock && product.stock > 0;
-  const isOutOfStock = product.stock === 0;
+  const isOutOfStock = product.stock <= 0;
 
   return (
     <div className="rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
@@ -56,6 +57,7 @@ export default function ProductCard({ product, onEdit, onDuplicate, onToggleStat
             >
               Stock: {product.stock}
             </span>
+            <StockBadge stock={product.stock} minimumStock={product.minimumStock} />
           </div>
         </div>
       </div>

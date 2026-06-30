@@ -370,7 +370,7 @@ export default function ProductForm({ initialData, categories, onSubmit, onCance
           Inventario
         </h3>
         <p className="mt-1 text-xs text-gray-400">
-          El stock será administrado desde el módulo Inventario en futuras versiones.
+          Define el stock inicial y el mínimo para alertas de inventario.
         </p>
         <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div>
