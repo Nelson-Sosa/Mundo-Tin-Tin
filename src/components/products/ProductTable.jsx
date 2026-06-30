@@ -1,9 +1,9 @@
-import { Pencil, Copy, EyeOff, Eye, Trash2, ImageOff } from "lucide-react";
+import { Pencil, Copy, EyeOff, Eye, Trash2, ImageOff, Search } from "lucide-react";
 import ProductStatusBadge from "./ProductStatusBadge";
 import { getImageUrl } from "../../services/cloudinary";
 import { formatCurrency } from "../../utils/formatCurrency";
 
-export default function ProductTable({ products, onEdit, onDuplicate, onToggleStatus, onDelete }) {
+export default function ProductTable({ products, onEdit, onDuplicate, onToggleStatus, onDelete, onViewDetail }) {
   return (
     <div className="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-border">
       <table className="w-full text-left text-sm">
@@ -86,6 +86,13 @@ export default function ProductTable({ products, onEdit, onDuplicate, onToggleSt
                 </td>
                 <td className="px-4 py-3.5">
                   <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => onViewDetail(prod)}
+                      className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-sky-50 hover:text-sky-600"
+                      title="Ver detalle"
+                    >
+                      <Search className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => onEdit(prod)}
                       className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-primary-light hover:text-primary"

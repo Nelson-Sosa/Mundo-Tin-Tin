@@ -8,6 +8,7 @@ import Register from "./pages/auth/Register";
 import Home from "./pages/Home";
 import Dashboard from "./pages/admin/Dashboard";
 import Products from "./pages/admin/Products";
+import ProductDetail from "./pages/admin/ProductDetail";
 import Categories from "./pages/admin/Categories";
 import Inventory from "./pages/admin/Inventory";
 
@@ -32,6 +33,7 @@ function App() {
             <Route index element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="productos" element={<Products />} />
+            <Route path="productos/:id" element={<ProductDetail />} />
             <Route path="categorias" element={<Categories />} />
             <Route path="inventario" element={<Inventory />} />
           </Route>

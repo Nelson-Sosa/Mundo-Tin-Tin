@@ -5,12 +5,13 @@ import {
   Eye,
   Trash2,
   ImageOff,
+  Search,
 } from "lucide-react";
 import ProductStatusBadge from "./ProductStatusBadge";
 import { getImageUrl } from "../../services/cloudinary";
 import { formatCurrency } from "../../utils/formatCurrency";
 
-export default function ProductCard({ product, onEdit, onDuplicate, onToggleStatus, onDelete }) {
+export default function ProductCard({ product, onEdit, onDuplicate, onToggleStatus, onDelete, onViewDetail }) {
   const mainImage = getImageUrl(product.images?.[0]);
   const isLowStock = product.stock <= product.minimumStock && product.stock > 0;
   const isOutOfStock = product.stock === 0;
@@ -60,6 +61,13 @@ export default function ProductCard({ product, onEdit, onDuplicate, onToggleStat
       </div>
 
       <div className="flex items-center gap-1 border-t border-border px-3 py-2">
+        <button
+          onClick={() => onViewDetail(product)}
+          className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:bg-sky-50 hover:text-sky-600"
+        >
+          <Search className="h-3.5 w-3.5" />
+          Detalle
+        </button>
         <button
           onClick={() => onEdit(product)}
           className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:bg-primary-light hover:text-primary"

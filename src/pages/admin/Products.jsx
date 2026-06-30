@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, ShieldBan } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -24,6 +25,7 @@ import {
 } from "../../components/products";
 
 export default function Products() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
 
@@ -162,6 +164,10 @@ export default function Products() {
     }
   }
 
+  function handleViewDetail(prod) {
+    navigate(`/admin/productos/${prod.id}`);
+  }
+
   function confirmDelete(prod) {
     setDeleteTarget(prod);
   }
@@ -275,6 +281,7 @@ export default function Products() {
                       <ProductCard
                         key={prod.id}
                         product={prod}
+                        onViewDetail={handleViewDetail}
                         onEdit={openEditModal}
                         onDuplicate={handleDuplicate}
                         onToggleStatus={handleToggleStatus}
@@ -287,6 +294,7 @@ export default function Products() {
                 <div className="hidden sm:block">
                   <ProductTable
                     products={filtered}
+                    onViewDetail={handleViewDetail}
                     onEdit={openEditModal}
                     onDuplicate={handleDuplicate}
                     onToggleStatus={handleToggleStatus}
