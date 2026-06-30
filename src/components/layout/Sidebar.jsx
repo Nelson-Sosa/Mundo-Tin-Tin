@@ -19,13 +19,13 @@ import { useAuth } from "../../context/AuthContext";
 
 const mainNav = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  { name: "Ventas", href: "/admin/ventas", icon: ShoppingCart },
   { name: "Productos", href: "/admin/productos", icon: Package },
   { name: "Categorías", href: "/admin/categorias", icon: Tags },
   { name: "Inventario", href: "/admin/inventario", icon: Warehouse },
 ];
 
 const comingSoon = [
-  { name: "Ventas", icon: ShoppingCart },
   { name: "Clientes", icon: Users },
   { name: "Gastos", icon: DollarSign },
   { name: "Reportes", icon: BarChart3 },

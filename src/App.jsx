@@ -11,6 +11,7 @@ import Products from "./pages/admin/Products";
 import ProductDetail from "./pages/admin/ProductDetail";
 import Categories from "./pages/admin/Categories";
 import Inventory from "./pages/admin/Inventory";
+import Ventas from "./pages/admin/Ventas";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="productos/:id" element={<ProductDetail />} />
             <Route path="categorias" element={<Categories />} />
             <Route path="inventario" element={<Inventory />} />
+            <Route path="ventas" element={<Ventas />} />
           </Route>
 
           <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
