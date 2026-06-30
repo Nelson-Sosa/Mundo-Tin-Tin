@@ -254,9 +254,6 @@ function CartPanel({
                 Transferencia
               </button>
             </div>
-            {paymentMethod === "transfer" && !clientName.trim() && (
-              <p className="mt-1 text-xs text-amber-600">Ingresá el nombre del cliente para transferencia</p>
-            )}
           </div>
 
           <div className="rounded-lg bg-gray-50 p-3 space-y-1.5">
@@ -435,10 +432,6 @@ export default function Ventas() {
   async function handleConfirmSale() {
     if (cart.length === 0) {
       toast.error("Agregá productos al carrito");
-      return;
-    }
-    if (paymentMethod === "transfer" && !clientName.trim()) {
-      toast.error("Ingresá el nombre del cliente para transferencia");
       return;
     }
     setSubmitting(true);
