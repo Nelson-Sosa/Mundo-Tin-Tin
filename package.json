@@ -12,7 +12,6 @@
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "@tailwindcss/vite": "^4.3.1",
-    "cloudinary": "^2.10.0",
     "firebase": "^12.15.0",
     "framer-motion": "^12.42.0",
     "lucide-react": "^1.22.0",
