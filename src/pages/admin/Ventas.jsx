@@ -4,16 +4,16 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useProducts } from "../../hooks/useProducts";
 import * as orderService from "../../services/orderService";
+import * as clientService from "../../services/clientService";
 import { getCategories } from "../../services/categoryService";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { getImageUrl } from "../../services/cloudinary";
 import PageContainer from "../../components/layout/PageContainer";
 
-const LOW_STOCK_THRESHOLD = 3;
-
 function ProductCard({ product, cart, onAddToCart }) {
   const isOut = product.stock <= 0;
-  const isLow = product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
+  const threshold = product.minimumStock || 5;
+  const isLow = product.stock > 0 && product.stock <= threshold;
   const inCart = cart.find((i) => i.productId === product.id);
   const imageUrl = product.images?.[0] ? getImageUrl(product.images[0]) : null;
 
@@ -87,8 +87,9 @@ function CartPanel({
   onClose,
   cart,
   cartItemCount,
-  clientName,
-  onClientNameChange,
+  clients,
+  selectedClientId,
+  onClientIdChange,
   discountType,
   onDiscountTypeChange,
   discountValue,
@@ -185,14 +186,17 @@ function CartPanel({
       {cart.length > 0 && (
         <div className="border-t border-border bg-white px-4 py-4 space-y-3.5 md:px-5">
           <div>
-            <label className="text-xs font-medium text-gray-500">Cliente (opcional)</label>
-            <input
-              type="text"
-              value={clientName}
-              onChange={(e) => onClientNameChange(e.target.value)}
-              placeholder="Cliente general"
-              className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
+            <label className="text-xs font-medium text-gray-500">Cliente</label>
+            <select
+              value={selectedClientId}
+              onChange={(e) => onClientIdChange(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            >
+              <option value="">Cliente general</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -309,7 +313,8 @@ export default function Ventas() {
   const [discountType, setDiscountType] = useState("none");
   const [discountValue, setDiscountValue] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cash");
-  const [clientName, setClientName] = useState("");
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [clients, setClients] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState("all");
@@ -321,6 +326,12 @@ export default function Ventas() {
   useEffect(() => {
     getCategories()
       .then((cats) => setCategories(cats.filter((c) => c.status === "active")))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    clientService.getClients()
+      .then(setClients)
       .catch(() => {});
   }, []);
 
@@ -407,7 +418,7 @@ export default function Ventas() {
     setCart([]);
     setDiscountType("none");
     setDiscountValue("");
-    setClientName("");
+    setSelectedClientId("");
     setCartOpen(false);
   }
 
@@ -428,6 +439,8 @@ export default function Ventas() {
 
   const total = subtotal - discount;
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const selectedClient = clients.find((c) => c.id === selectedClientId);
+  const clientName = selectedClient?.name || "";
 
   async function handleConfirmSale() {
     if (cart.length === 0) {
@@ -445,7 +458,8 @@ export default function Ventas() {
         discountType: discountType === "none" ? null : discountType,
         discountValue: discountType === "none" ? 0 : parseFloat(discountValue) || 0,
         discount, total, paymentMethod,
-        clientName: clientName.trim() || null,
+        clientId: selectedClientId || null,
+        clientName: clientName || null,
         userId: user.uid,
       });
       toast.success(`Venta registrada — Total: ${formatCurrency(total)}`);
@@ -460,6 +474,7 @@ export default function Ventas() {
       } else if (msg === "EMPTY_ORDER") {
         toast.error("El carrito está vacío");
       } else {
+        console.error("Error al registrar venta:", err);
         toast.error("Error al registrar la venta");
       }
     } finally {
@@ -568,8 +583,9 @@ export default function Ventas() {
             variant="desktop"
             cart={cart}
             cartItemCount={cartItemCount}
-            clientName={clientName}
-            onClientNameChange={setClientName}
+            clients={clients}
+            selectedClientId={selectedClientId}
+            onClientIdChange={setSelectedClientId}
             discountType={discountType}
             onDiscountTypeChange={setDiscountType}
             discountValue={discountValue}
@@ -625,8 +641,9 @@ export default function Ventas() {
               onClose={() => setCartOpen(false)}
               cart={cart}
               cartItemCount={cartItemCount}
-              clientName={clientName}
-              onClientNameChange={setClientName}
+              clients={clients}
+              selectedClientId={selectedClientId}
+              onClientIdChange={setSelectedClientId}
               discountType={discountType}
               onDiscountTypeChange={setDiscountType}
               discountValue={discountValue}

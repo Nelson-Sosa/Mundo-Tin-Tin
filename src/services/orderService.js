@@ -16,8 +16,9 @@ import { db } from "../firebase/firebaseConfig";
 
 const ORDERS_COLLECTION = "orders";
 const PRODUCTS_COLLECTION = "products";
+const CLIENTS_COLLECTION = "clients";
 
-export async function createOrder({ items, subtotal, discountType, discountValue, discount, total, paymentMethod, clientName, userId }) {
+export async function createOrder({ items, subtotal, discountType, discountValue, discount, total, paymentMethod, clientId, clientName, userId }) {
   if (!items || items.length === 0) throw new Error("EMPTY_ORDER");
   if (!paymentMethod) throw new Error("MISSING_PAYMENT_METHOD");
   if (total < 0) throw new Error("NEGATIVE_TOTAL");
@@ -26,46 +27,77 @@ export async function createOrder({ items, subtotal, discountType, discountValue
   const orderDocRef = doc(ordersColRef);
 
   await runTransaction(db, async (transaction) => {
-    for (const item of items) {
-      const productRef = doc(db, PRODUCTS_COLLECTION, item.productId);
-      const snap = await transaction.get(productRef);
+    const productRefs = items.map((item) => doc(db, PRODUCTS_COLLECTION, item.productId));
 
+    const productSnaps = await Promise.all(
+      productRefs.map((ref) => transaction.get(ref)),
+    );
+
+    let clientSnap = null;
+    if (clientId) {
+      clientSnap = await transaction.get(doc(db, CLIENTS_COLLECTION, clientId));
+    }
+
+    for (let i = 0; i < items.length; i++) {
+      const snap = productSnaps[i];
+      const item = items[i];
       if (!snap.exists()) {
         throw new Error(`PRODUCT_NOT_FOUND:${item.productId}`);
       }
-
       const currentStock = snap.data().stock ?? 0;
       if (currentStock < item.quantity) {
         throw new Error(`INSUFFICIENT_STOCK:${item.productId}:${snap.data().name}`);
       }
+    }
 
-      transaction.update(productRef, {
-        stock: currentStock - item.quantity,
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      transaction.update(productRefs[i], {
+        stock: (productSnaps[i].data().stock ?? 0) - item.quantity,
         updatedAt: serverTimestamp(),
         updatedBy: userId,
       });
     }
 
-      transaction.set(orderDocRef, {
-        items: items.map(({ productId, name, sku, quantity, unitPrice, subtotal }) => ({
-          productId,
-          name,
-          sku: sku || "",
-          quantity,
-          unitPrice,
-          subtotal,
-        })),
+    const orderData = {
+      items: items.map(({ productId, name, sku, quantity, unitPrice, subtotal }) => ({
+        productId,
+        name,
+        sku: sku || "",
+        quantity,
+        unitPrice,
         subtotal,
-        discountType: discountType || null,
-        discountValue: discountValue || 0,
-        discount: discount || 0,
-        total,
-        paymentMethod,
-        clientName: clientName?.trim() || null,
-        status: "completed",
-        createdBy: userId,
-        createdAt: serverTimestamp(),
-      });
+      })),
+      subtotal,
+      discountType: discountType || null,
+      discountValue: discountValue || 0,
+      discount: discount || 0,
+      total,
+      paymentMethod,
+      clientName: clientName?.trim() || null,
+      status: "completed",
+      createdBy: userId,
+      createdAt: serverTimestamp(),
+    };
+
+    if (clientId) {
+      orderData.clientId = clientId;
+    }
+
+    transaction.set(orderDocRef, orderData);
+
+    if (clientSnap?.exists()) {
+      const clientData = clientSnap.data();
+      const updates = {
+        orderCount: (clientData.orderCount || 0) + 1,
+        totalSpent: (clientData.totalSpent || 0) + total,
+        lastPurchaseDate: serverTimestamp(),
+      };
+      if (!clientData.firstPurchaseDate) {
+        updates.firstPurchaseDate = serverTimestamp();
+      }
+      transaction.update(doc(db, CLIENTS_COLLECTION, clientId), updates);
+    }
   });
 
   return { id: orderDocRef.id };
@@ -205,6 +237,18 @@ export async function cancelOrder(orderId, userId) {
       cancelledAt: serverTimestamp(),
       cancelledBy: userId,
     });
+
+    if (order.clientId) {
+      const clientRef = doc(db, CLIENTS_COLLECTION, order.clientId);
+      const clientSnap = await transaction.get(clientRef);
+      if (clientSnap.exists()) {
+        const clientData = clientSnap.data();
+        transaction.update(clientRef, {
+          orderCount: Math.max(0, (clientData.orderCount || 0) - 1),
+          totalSpent: Math.max(0, (clientData.totalSpent || 0) - (order.total || 0)),
+        });
+      }
+    }
   });
 
   return { id: orderId };

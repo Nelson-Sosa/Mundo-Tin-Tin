@@ -22,14 +22,14 @@ const mainNav = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Ventas", href: "/admin/ventas", icon: ShoppingCart },
   { name: "Historial", href: "/admin/historial", icon: History },
+  { name: "Clientes", href: "/admin/clientes", icon: Users },
+  { name: "Gastos", href: "/admin/gastos", icon: DollarSign },
   { name: "Productos", href: "/admin/productos", icon: Package },
   { name: "Categorías", href: "/admin/categorias", icon: Tags },
   { name: "Inventario", href: "/admin/inventario", icon: Warehouse },
 ];
 
 const comingSoon = [
-  { name: "Clientes", icon: Users },
-  { name: "Gastos", icon: DollarSign },
   { name: "Reportes", icon: BarChart3 },
 ];
 

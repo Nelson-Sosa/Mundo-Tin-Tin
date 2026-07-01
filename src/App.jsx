@@ -13,6 +13,9 @@ import Categories from "./pages/admin/Categories";
 import Inventory from "./pages/admin/Inventory";
 import Ventas from "./pages/admin/Ventas";
 import Historial from "./pages/admin/Historial";
+import Clients from "./pages/admin/Clients";
+import ClientDetail from "./pages/admin/ClientDetail";
+import GastosOperativos from "./pages/admin/GastosOperativos";
 
 function App() {
   return (
@@ -40,6 +43,9 @@ function App() {
             <Route path="inventario" element={<Inventory />} />
             <Route path="ventas" element={<Ventas />} />
             <Route path="historial" element={<Historial />} />
+            <Route path="clientes" element={<Clients />} />
+            <Route path="clientes/:id" element={<ClientDetail />} />
+            <Route path="gastos" element={<GastosOperativos />} />
           </Route>
 
           <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
