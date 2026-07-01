@@ -8,13 +8,10 @@ import {
   History,
   Users,
   DollarSign,
-  BarChart3,
-  Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
   X,
-  Lock,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -29,11 +26,6 @@ const mainNav = [
   { name: "Inventario", href: "/admin/inventario", icon: Warehouse },
 ];
 
-const comingSoon = [
-  { name: "Reportes", icon: BarChart3 },
-];
-
-const secondaryNav = [{ name: "Configuración", icon: Settings }];
 
 export default function Sidebar({ collapsed, mobileOpen, onClose, onToggle }) {
   const { logout } = useAuth();
@@ -156,18 +148,7 @@ export default function Sidebar({ collapsed, mobileOpen, onClose, onToggle }) {
             <NavItem key={item.name} item={item} />
           ))}
 
-          <div className="my-5 border-t border-border" />
 
-          <SectionLabel text="Próximamente" />
-          {comingSoon.map((item) => (
-            <NavItem key={item.name} item={item} disabled />
-          ))}
-
-          <div className="my-5 border-t border-border" />
-
-          {secondaryNav.map((item) => (
-            <NavItem key={item.name} item={item} disabled />
-          ))}
         </nav>
 
         <div className="border-t border-border px-3 py-3">

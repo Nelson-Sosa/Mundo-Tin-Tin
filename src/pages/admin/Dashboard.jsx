@@ -79,7 +79,7 @@ function StatusBadge({ status }) {
 const statDefs = [
   { key: "ventasDia", title: "Ventas del día", icon: ShoppingCart, accent: "primary", kind: "currency" },
   { key: "ventasMes", title: "Ventas del mes", icon: TrendingUp, accent: "rose", kind: "currency" },
-  { key: "ganancias", title: "Ganancias", icon: DollarSign, accent: "primary", kind: "currency" },
+  { key: "ganancias", title: "Ganancias (mes)", icon: DollarSign, accent: "primary", kind: "currency" },
   { key: "gastosDia", title: "Gastos (hoy)", icon: CreditCard, accent: "rose", kind: "currency" },
   { key: "productosVendidos", title: "Productos vendidos (mes)", icon: ShoppingBag, accent: "primary", kind: "number" },
   { key: "stockBajo", title: "Stock bajo", icon: AlertTriangle, accent: "rose", kind: "number" },

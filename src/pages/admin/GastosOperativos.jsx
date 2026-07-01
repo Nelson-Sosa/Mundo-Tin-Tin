@@ -116,64 +116,65 @@ export default function GastosOperativos() {
 
   return (
     <PageContainer title="Gastos Operativos" description="Registrá los gastos diarios del negocio">
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-5">
-        {/* Form + summary */}
-        <div className="space-y-6 lg:col-span-2">
-          {/* Summary cards */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
-              <div className="h-1 w-full bg-rose-500" />
-              <div className="p-4 sm:p-5">
-                <div className="flex items-start justify-between">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium text-gray-500 sm:text-sm">Gastos de hoy</p>
-                    <p className="mt-1.5 text-lg font-bold tracking-tight text-gray-800 sm:text-xl">
-                      {formatCurrency(todayTotal)}
-                    </p>
-                  </div>
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 sm:h-12 sm:w-12">
-                    <Clock className="h-5 w-5 text-rose-500 sm:h-6 sm:w-6" />
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div className="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
-              <div className="h-1 w-full bg-primary" />
-              <div className="p-4 sm:p-5">
-                <div className="flex items-start justify-between">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium text-gray-500 sm:text-sm">Gastos de la semana</p>
-                    <p className="mt-1.5 text-lg font-bold tracking-tight text-gray-800 sm:text-xl">
-                      {formatCurrency(weekTotal)}
-                    </p>
-                  </div>
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light sm:h-12 sm:w-12">
-                    <TrendingUp className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
-                  </div>
-                </div>
+      {/* Summary cards — full width, outside the form/list grid */}
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
+          <div className="h-1 w-full bg-rose-500" />
+          <div className="p-4 sm:p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-gray-500 sm:text-sm">Gastos de hoy</p>
+                <p className="mt-1 whitespace-nowrap text-base font-bold text-gray-800 sm:text-lg">
+                  {formatCurrency(todayTotal)}
+                </p>
               </div>
-            </div>
-
-            <div className="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
-              <div className="h-1 w-full bg-rose-500" />
-              <div className="p-4 sm:p-5">
-                <div className="flex items-start justify-between">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium text-gray-500 sm:text-sm">Gastos del mes</p>
-                    <p className="mt-1.5 text-lg font-bold tracking-tight text-gray-800 sm:text-xl">
-                      {formatCurrency(monthTotal)}
-                    </p>
-                  </div>
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 sm:h-12 sm:w-12">
-                    <Calendar className="h-5 w-5 text-rose-500 sm:h-6 sm:w-6" />
-                  </div>
-                </div>
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 sm:h-10 sm:w-10">
+                <Clock className="h-4 w-4 text-rose-500 sm:h-5 sm:w-5" />
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Form */}
+        <div className="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
+          <div className="h-1 w-full bg-primary" />
+          <div className="p-4 sm:p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-gray-500 sm:text-sm">Gastos de la semana</p>
+                <p className="mt-1 whitespace-nowrap text-base font-bold text-gray-800 sm:text-lg">
+                  {formatCurrency(weekTotal)}
+                </p>
+              </div>
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-light sm:h-10 sm:w-10">
+                <TrendingUp className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
+          <div className="h-1 w-full bg-rose-500" />
+          <div className="p-4 sm:p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-gray-500 sm:text-sm">Gastos del mes</p>
+                <p className="mt-1 whitespace-nowrap text-base font-bold text-gray-800 sm:text-lg">
+                  {formatCurrency(monthTotal)}
+                </p>
+              </div>
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 sm:h-10 sm:w-10">
+                <Calendar className="h-4 w-4 text-rose-500 sm:h-5 sm:w-5" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Form + List grid */}
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-5">
+        {/* Form */}
+        <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-border sm:p-5">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-700">
               <Receipt className="h-4 w-4 text-primary" />
@@ -251,10 +252,10 @@ export default function GastosOperativos() {
           </form>
         </div>
 
-        {/* Gastos list */}
+        {/* Gastos list — scroll si excede altura */}
         <div className="lg:col-span-3">
-          <div className="rounded-xl bg-white shadow-sm ring-1 ring-border">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-5 sm:py-4">
+          <div className="flex h-full flex-col rounded-xl bg-white shadow-sm ring-1 ring-border">
+            <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3 sm:px-5 sm:py-4">
               <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-700">
                 <DollarSign className="h-4 w-4 text-primary" />
                 Gastos registrados
@@ -262,35 +263,37 @@ export default function GastosOperativos() {
               <span className="text-xs text-gray-400">{gastos.length} registro{gastos.length !== 1 ? "s" : ""}</span>
             </div>
 
-            {loading ? (
-              <div className="space-y-3 p-4 sm:p-5">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-100 sm:h-14" />
-                ))}
-              </div>
-            ) : gastos.length === 0 ? (
-              <div className="flex flex-col items-center justify-center px-4 py-10 text-center sm:py-12">
-                <Receipt className="h-10 w-10 text-gray-300" />
-                <p className="mt-3 text-sm text-gray-500">No hay gastos registrados</p>
-                <p className="text-xs text-gray-400">Usá el formulario para registrar tu primer gasto</p>
-              </div>
-            ) : (
-              <ul className="divide-y divide-gray-100">
-                {gastos.map((gasto) => (
-                  <li key={gasto.id} className="flex items-center justify-between px-4 py-3 transition-colors hover:bg-gray-50/50 sm:px-5 sm:py-3.5">
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-gray-800">{gasto.nombreGasto}</p>
-                      <p className="mt-0.5 text-xs text-gray-400">
-                        {gasto.fecha ? formatDateShort(gasto.fecha) : formatDateShort(gasto.createdAt)}
-                      </p>
-                    </div>
-                    <div className="ml-3 shrink-0 text-right sm:ml-4">
-                      <p className="text-sm font-semibold text-gray-900">{formatCurrency(gasto.monto)}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              {loading ? (
+                <div className="space-y-3 p-4 sm:p-5">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-100 sm:h-14" />
+                  ))}
+                </div>
+              ) : gastos.length === 0 ? (
+                <div className="flex flex-col items-center justify-center px-4 py-10 text-center sm:py-12">
+                  <Receipt className="h-10 w-10 text-gray-300" />
+                  <p className="mt-3 text-sm text-gray-500">No hay gastos registrados</p>
+                  <p className="text-xs text-gray-400">Usá el formulario para registrar tu primer gasto</p>
+                </div>
+              ) : (
+                <ul className="divide-y divide-gray-100">
+                  {gastos.map((gasto) => (
+                    <li key={gasto.id} className="flex items-center justify-between px-4 py-3 transition-colors hover:bg-gray-50/50 sm:px-5 sm:py-3.5">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-gray-800">{gasto.nombreGasto}</p>
+                        <p className="mt-0.5 text-xs text-gray-400">
+                          {gasto.fecha ? formatDateShort(gasto.fecha) : formatDateShort(gasto.createdAt)}
+                        </p>
+                      </div>
+                      <div className="ml-3 shrink-0 text-right sm:ml-4">
+                        <p className="text-sm font-semibold text-gray-900">{formatCurrency(gasto.monto)}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
       </div>
