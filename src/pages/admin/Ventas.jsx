@@ -7,7 +7,7 @@ import * as orderService from "../../services/orderService";
 import * as clientService from "../../services/clientService";
 import { getCategories } from "../../services/categoryService";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { getImageUrl } from "../../services/cloudinary";
+import { getThumbImage } from "../../lib/cloudinary";
 import PageContainer from "../../components/layout/PageContainer";
 
 function ProductCard({ product, cart, onAddToCart }) {
@@ -15,7 +15,7 @@ function ProductCard({ product, cart, onAddToCart }) {
   const threshold = product.minimumStock || 5;
   const isLow = product.stock > 0 && product.stock <= threshold;
   const inCart = cart.find((i) => i.productId === product.id);
-  const imageUrl = product.images?.[0] ? getImageUrl(product.images[0]) : null;
+  const imageUrl = product.images?.[0] ? getThumbImage(product.images[0], 64) : null;
 
   return (
     <button

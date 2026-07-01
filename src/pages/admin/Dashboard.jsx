@@ -9,13 +9,15 @@ import {
   XCircle,
   Inbox,
   Eye,
+  CreditCard as CardIcon,
+  Banknote,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PageContainer from "../../components/layout/PageContainer";
 import StatCard from "../../components/ui/StatCard";
 import SectionHeader from "../../components/ui/SectionHeader";
 import EmptyState from "../../components/ui/EmptyState";
-import SkeletonChart from "../../components/ui/SkeletonChart";
+
 import { formatCurrency } from "../../utils/formatCurrency";
 import { getDashboardData } from "../../services/dashboardService";
 
@@ -84,6 +86,51 @@ const statDefs = [
   { key: "agotados", title: "Productos agotados", icon: XCircle, accent: "primary", kind: "number" },
 ];
 
+// ---------------------------------------------------------------------------
+// Vista mobile de orden — card apilada por fila
+// ---------------------------------------------------------------------------
+function OrderCard({ order, onView }) {
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-white p-4 shadow-sm">
+      {/* Fila 1: fecha + estado */}
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-medium text-gray-500">
+          {formatDate(order.createdAt)}
+        </span>
+        <StatusBadge status={order.status} />
+      </div>
+
+      {/* Fila 2: productos */}
+      <p className="truncate text-sm font-semibold text-gray-800">
+        {productsSummary(order.items)}
+      </p>
+
+      {/* Fila 3: cliente + método de pago */}
+      <div className="flex items-center justify-between gap-2">
+        <span className="truncate text-xs text-gray-500">
+          {order.clientName || "Cliente general"}
+        </span>
+        <PaymentBadge method={order.paymentMethod} />
+      </div>
+
+      {/* Fila 4: total + acción */}
+      <div className="flex items-center justify-between border-t border-border pt-3">
+        <span className="text-sm font-bold text-gray-800">
+          {formatCurrency(order.total)}
+        </span>
+        <button
+          onClick={onView}
+          className="flex items-center gap-1.5 rounded-lg bg-primary-light px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary hover:text-white"
+          title="Ver en historial"
+        >
+          <Eye className="h-3.5 w-3.5" />
+          Ver
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
@@ -109,8 +156,12 @@ export default function Dashboard() {
 
   return (
     <PageContainer title="Dashboard" description="Resumen general del negocio">
-      {/* Stat cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Stat cards                                                          */}
+      {/* Mobile: 2 columnas | Tablet: 3 columnas | Desktop: 4 columnas      */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
         {statDefs.map((stat) => {
           let value = null;
 
@@ -137,37 +188,63 @@ export default function Dashboard() {
         })}
       </div>
 
-      {/* Bottom section */}
-      <div className="mt-8 grid gap-6 lg:grid-cols-3">
-        {/* Recent orders */}
-        <div className="lg:col-span-2">
-          <SectionHeader
-            title="Últimas ventas"
-            description={hasRecentOrders ? `${data.recentOrders.length} ventas recientes` : "Historial de transacciones recientes"}
-          />
-          <div className="mt-4 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border">
-            {loading ? (
-              <div className="space-y-3 p-5">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-100" />
+      {/* ------------------------------------------------------------------ */}
+      {/* Últimas ventas                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="mt-6 sm:mt-8">
+        <SectionHeader
+          title="Últimas ventas"
+          description={
+            hasRecentOrders
+              ? `${data.recentOrders.length} ventas recientes`
+              : "Historial de transacciones recientes"
+          }
+        />
+
+        <div className="mt-4 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border">
+          {/* Skeleton de carga */}
+          {loading ? (
+            <div className="space-y-3 p-4 sm:p-5">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-100" />
+              ))}
+            </div>
+          ) : !hasRecentOrders ? (
+            <EmptyState
+              icon={Inbox}
+              title="No existen ventas registradas"
+              description="Las ventas aparecerán aquí cuando comiences a utilizar el sistema."
+              action={
+                <button
+                  onClick={() => navigate("/admin/ventas")}
+                  className="inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-dark"
+                >
+                  Ir al módulo de Ventas
+                </button>
+              }
+            />
+          ) : (
+            <>
+              {/*
+                MOBILE / TABLET (< lg): cards apiladas, una por venta.
+                Evita el scroll horizontal y mejora la legibilidad táctil.
+              */}
+              <div className="flex flex-col divide-y divide-gray-100 p-3 sm:p-4 lg:hidden">
+                {data.recentOrders.map((order) => (
+                  <div key={order.id} className="py-3 first:pt-0 last:pb-0">
+                    <OrderCard
+                      order={order}
+                      onView={() => navigate("/admin/historial")}
+                    />
+                  </div>
                 ))}
               </div>
-            ) : !hasRecentOrders ? (
-              <EmptyState
-                icon={Inbox}
-                title="No existen ventas registradas"
-                description="Las ventas aparecerán aquí cuando comiences a utilizar el sistema."
-                action={
-                  <button
-                    onClick={() => navigate("/admin/ventas")}
-                    className="inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-dark"
-                  >
-                    Ir al módulo de Ventas
-                  </button>
-                }
-              />
-            ) : (
-              <div className="overflow-x-auto">
+
+              {/*
+                DESKTOP (≥ lg): tabla completa con todas las columnas.
+                Se mantiene idéntica a la versión original.
+              */}
+              <div className="hidden overflow-x-auto lg:block">
                 <table className="w-full text-left text-sm">
                   <thead>
                     <tr className="border-b border-border bg-gray-50/50">
@@ -203,14 +280,8 @@ export default function Dashboard() {
                   </tbody>
                 </table>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Charts placeholder */}
-        <div className="space-y-6">
-          <SkeletonChart title="Ventas por mes" />
-          <SkeletonChart title="Productos más vendidos" />
+            </>
+          )}
         </div>
       </div>
     </PageContainer>

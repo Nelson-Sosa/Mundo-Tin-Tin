@@ -18,7 +18,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import * as productService from "../../services/productService";
 import { getCategories } from "../../services/categoryService";
-import { getImageUrl } from "../../services/cloudinary";
+import { getDetailImage, getThumbImage } from "../../lib/cloudinary";
 import { formatCurrency } from "../../utils/formatCurrency";
 import ProductStatusBadge from "../../components/products/ProductStatusBadge";
 import StockBadge from "../../components/products/StockBadge";
@@ -76,7 +76,7 @@ export default function ProductDetail() {
   if (!product) return null;
 
   const images = Array.isArray(product.images) ? product.images : [];
-  const mainImageUrl = getImageUrl(images[selectedImage]);
+  const mainImageUrl = images.length > 0 ? getDetailImage(images[selectedImage]) : null;
   const isActive = product.status === "active";
   const isLowStock = product.stock <= product.minimumStock && product.stock > 0;
   const isOutOfStock = product.stock <= 0;
@@ -177,7 +177,7 @@ export default function ProductDetail() {
               {images.length > 1 && (
                 <div className="flex gap-2 border-t border-border p-3">
                   {images.map((img, i) => {
-                    const thumbUrl = getImageUrl(img);
+                    const thumbUrl = getThumbImage(img, 56);
                     return (
                       <button
                         key={i}

@@ -1,7 +1,7 @@
 import { Pencil, Copy, EyeOff, Eye, Trash2, ImageOff, Search } from "lucide-react";
 import ProductStatusBadge from "./ProductStatusBadge";
 import StockBadge from "./StockBadge";
-import { getImageUrl } from "../../services/cloudinary";
+import { getThumbImage } from "../../lib/cloudinary";
 import { formatCurrency } from "../../utils/formatCurrency";
 
 export default function ProductTable({ products, onEdit, onDuplicate, onToggleStatus, onDelete, onViewDetail }) {
@@ -32,7 +32,7 @@ export default function ProductTable({ products, onEdit, onDuplicate, onToggleSt
         </thead>
         <tbody className="divide-y divide-gray-100">
           {products.map((prod) => {
-            const mainImage = getImageUrl(prod.images?.[0]);
+            const mainImage = getThumbImage(prod.images?.[0], 40);
             const isLowStock = prod.stock <= prod.minimumStock && prod.stock > 0;
             const isOutOfStock = prod.stock <= 0;
 
