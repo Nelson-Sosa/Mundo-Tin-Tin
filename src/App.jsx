@@ -12,6 +12,7 @@ import ProductDetail from "./pages/admin/ProductDetail";
 import Categories from "./pages/admin/Categories";
 import Inventory from "./pages/admin/Inventory";
 import Ventas from "./pages/admin/Ventas";
+import Historial from "./pages/admin/Historial";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             <Route path="categorias" element={<Categories />} />
             <Route path="inventario" element={<Inventory />} />
             <Route path="ventas" element={<Ventas />} />
+            <Route path="historial" element={<Historial />} />
           </Route>
 
           <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />

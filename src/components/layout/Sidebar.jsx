@@ -5,6 +5,7 @@ import {
   Tags,
   Warehouse,
   ShoppingCart,
+  History,
   Users,
   DollarSign,
   BarChart3,
@@ -20,6 +21,7 @@ import { useAuth } from "../../context/AuthContext";
 const mainNav = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Ventas", href: "/admin/ventas", icon: ShoppingCart },
+  { name: "Historial", href: "/admin/historial", icon: History },
   { name: "Productos", href: "/admin/productos", icon: Package },
   { name: "Categorías", href: "/admin/categorias", icon: Tags },
   { name: "Inventario", href: "/admin/inventario", icon: Warehouse },
