@@ -21,7 +21,7 @@ function ProductCard({ product, cart, onAddToCart }) {
     <button
       onClick={() => !isOut && onAddToCart(product)}
       disabled={isOut}
-      className={`relative flex items-center gap-3 rounded-xl border-2 p-3 text-left transition-all active:scale-[0.98] sm:flex-col sm:p-4 sm:text-center ${
+      className={`relative flex items-center gap-3 rounded-xl border-2 p-3 text-left transition-all active:scale-[0.98] sm:p-4 ${
         isOut
           ? "cursor-not-allowed border-gray-100 bg-gray-50 opacity-50"
           : inCart
@@ -39,9 +39,9 @@ function ProductCard({ product, cart, onAddToCart }) {
           {inCart.quantity}
         </span>
       )}
-      <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-lg sm:h-16 sm:w-16 sm:mx-auto ${
+      <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-lg sm:h-16 sm:w-16 ${
         imageUrl ? "" : "bg-gray-100"
-      } ${inCart ? "p-1 sm:p-1.5" : ""}`}>
+      } ${inCart ? "p-1" : ""}`}>
         {imageUrl ? (
           <img src={imageUrl} alt={product.name} className="h-full w-full rounded-lg object-cover" />
         ) : (
