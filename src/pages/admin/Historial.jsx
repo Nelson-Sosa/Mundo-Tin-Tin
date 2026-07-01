@@ -391,38 +391,38 @@ export default function Historial() {
       </div>
 
       {/* Filters */}
-      <div className="mb-6 rounded-xl bg-white p-4 shadow-sm ring-1 ring-border sm:p-5">
-        <div className="flex flex-wrap items-end gap-3">
+      <div className="mb-6 rounded-xl bg-white p-3 shadow-sm ring-1 ring-border sm:p-5">
+        <div className="flex flex-wrap items-end gap-2 sm:gap-3">
           <div className="min-w-0 flex-1 sm:flex-none">
-            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+            <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 sm:mb-1 sm:text-[11px]">
               Desde
             </label>
             <input
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 sm:w-auto"
+              className="w-full rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs focus:border-primary focus:ring-2 focus:ring-primary/20 sm:px-3 sm:py-2 sm:text-sm sm:w-auto"
             />
           </div>
           <div className="min-w-0 flex-1 sm:flex-none">
-            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+            <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 sm:mb-1 sm:text-[11px]">
               Hasta
             </label>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 sm:w-auto"
+              className="w-full rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs focus:border-primary focus:ring-2 focus:ring-primary/20 sm:px-3 sm:py-2 sm:text-sm sm:w-auto"
             />
           </div>
           <div className="min-w-0 flex-1 sm:flex-none">
-            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+            <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 sm:mb-1 sm:text-[11px]">
               Método de pago
             </label>
             <select
               value={paymentFilter}
               onChange={(e) => setPaymentFilter(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 sm:w-auto"
+              className="w-full rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs focus:border-primary focus:ring-2 focus:ring-primary/20 sm:px-3 sm:py-2 sm:text-sm sm:w-auto"
             >
               <option value="all">Todos</option>
               <option value="cash">Efectivo</option>
@@ -430,31 +430,31 @@ export default function Historial() {
             </select>
           </div>
           <div className="min-w-0 flex-1 sm:flex-none">
-            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-gray-500">
+            <label className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wider text-gray-500 sm:mb-1 sm:text-[11px]">
               Cliente
             </label>
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400 sm:left-2.5 sm:h-4 sm:w-4" />
               <input
                 type="text"
                 placeholder="Buscar cliente..."
                 value={clientFilter}
                 onChange={(e) => setClientFilter(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 py-2 pl-8 pr-3 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 sm:w-44"
+                className="w-full rounded-lg border border-gray-200 py-1.5 pl-7 pr-2.5 text-xs focus:border-primary focus:ring-2 focus:ring-primary/20 sm:py-2 sm:pl-8 sm:pr-3 sm:text-sm sm:w-44"
               />
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center gap-2 sm:w-auto">
             <button
               onClick={handleFilter}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+              className="flex-1 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover sm:flex-none"
             >
               Filtrar
             </button>
             {hasFilters && (
               <button
                 onClick={handleClearFilters}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50"
+                className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 sm:flex-none"
               >
                 Limpiar
               </button>
@@ -463,15 +463,15 @@ export default function Historial() {
         </div>
 
         {/* Disabled vendedor filter — activate when multi-user is implemented */}
-        <div className="mt-3 flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2">
-          <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
+        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-gray-50 px-2.5 py-1.5 sm:mt-3 sm:flex-nowrap sm:gap-2 sm:px-3 sm:py-2">
+          <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider sm:text-[11px]">
             Vendedor
           </span>
-          <span className="rounded bg-gray-200 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+          <span className="rounded bg-gray-200 px-1.5 py-0.5 text-[9px] font-medium text-gray-500 sm:px-2 sm:text-[10px]">
             Próximamente
           </span>
-          <p className="text-[11px] text-gray-400">
-            Activar cuando exista el concepto de múltiples usuarios/vendedores en el sistema
+          <p className="w-full text-[10px] text-gray-400 sm:w-auto sm:text-[11px]">
+            Activar cuando existan múltiples usuarios/vendedores
           </p>
         </div>
       </div>
@@ -606,7 +606,7 @@ export default function Historial() {
         )}
       </div>
 
-      {/* Mobile/Tablet Card List */}
+
       <div className="space-y-3 lg:hidden">
         {loading && orders.length === 0 ? (
           <div className="flex items-center justify-center py-20">
@@ -625,23 +625,23 @@ export default function Historial() {
               return (
                 <div
                   key={order.id}
-                  className={`rounded-xl bg-white p-4 shadow-sm ring-1 ${
+                  className={`rounded-xl bg-white p-3 shadow-sm ring-1 sm:p-4 ${
                     isCancelled ? "ring-danger/20" : "ring-border"
                   }`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-sm font-semibold text-gray-900">
                           {formatCurrency(order.total)}
                         </span>
                         <StatusBadge status={order.status} />
                       </div>
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-0.5 text-xs text-gray-500">
                         {formatDateShort(order.createdAt)}
                       </p>
                     </div>
-                    <div className="flex items-center gap-1 ml-2">
+                    <div className="flex shrink-0 items-center gap-0.5">
                       <button
                         onClick={() => setSelectedOrder(order)}
                         className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-primary-light hover:text-primary"
@@ -659,7 +659,7 @@ export default function Historial() {
                     </div>
                   </div>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-600">
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600">
                     <span className="flex items-center gap-1">
                       <Package className="h-3.5 w-3.5 text-gray-400" />
                       {order.items?.length || 0} producto{(order.items?.length || 0) !== 1 ? "s" : ""}
@@ -671,7 +671,7 @@ export default function Historial() {
                   </div>
 
                   {order.items && order.items.length > 0 && (
-                    <p className="mt-1.5 text-xs text-gray-500 truncate">
+                    <p className="mt-1 text-xs text-gray-500 truncate">
                       {productsSummary(order.items)}
                     </p>
                   )}
@@ -681,25 +681,27 @@ export default function Historial() {
 
             {/* Mobile Pagination */}
             <div className="flex items-center justify-between pt-2">
-              <p className="text-sm text-gray-500">
+              <p className="text-xs text-gray-500 sm:text-sm">
                 Página {page}
               </p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={handlePrevPage}
                   disabled={page <= 1}
-                  className="flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed sm:px-3 sm:text-sm"
                 >
-                  <ChevronLeft className="h-4 w-4" />
-                  Anterior
+                  <ChevronLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Anterior</span>
+                  <span className="sm:hidden">Ant.</span>
                 </button>
                 <button
                   onClick={handleNextPage}
                   disabled={!hasMore}
-                  className="flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed sm:px-3 sm:text-sm"
                 >
-                  Siguiente
-                  <ChevronRight className="h-4 w-4" />
+                  <span className="hidden sm:inline">Siguiente</span>
+                  <span className="sm:hidden">Sig.</span>
+                  <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </button>
               </div>
             </div>

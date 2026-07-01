@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Plus, DollarSign, Receipt, TrendingUp, Clock } from "lucide-react";
+import { Plus, DollarSign, Receipt, TrendingUp, Clock, Calendar } from "lucide-react";
 import toast from "react-hot-toast";
 
 import * as gastoService from "../../services/gastoOperativoService";
@@ -55,24 +55,43 @@ export default function GastosOperativos() {
     loadGastos();
   }, []);
 
-  const todayGastos = useMemo(() => {
+  const todayTotal = useMemo(() => {
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    return gastos.filter((g) => {
-      const d = g.fecha?.toDate?.() || new Date(0);
-      return d.getTime() >= startOfDay;
-    });
+    return gastos
+      .filter((g) => {
+        const d = g.fecha?.toDate?.() || new Date(0);
+        return d.getTime() >= startOfDay;
+      })
+      .reduce((sum, g) => sum + (g.monto || 0), 0);
   }, [gastos]);
 
-  const todayTotal = useMemo(
-    () => todayGastos.reduce((sum, g) => sum + (g.monto || 0), 0),
-    [todayGastos],
-  );
+  const weekTotal = useMemo(() => {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+    const startOfWeek = monday.getTime();
+    return gastos
+      .filter((g) => {
+        const d = g.fecha?.toDate?.() || new Date(0);
+        return d.getTime() >= startOfWeek;
+      })
+      .reduce((sum, g) => sum + (g.monto || 0), 0);
+  }, [gastos]);
 
-  const allTimeTotal = useMemo(
-    () => gastos.reduce((sum, g) => sum + (g.monto || 0), 0),
-    [gastos],
-  );
+  const monthTotal = useMemo(() => {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    return gastos
+      .filter((g) => {
+        const d = g.fecha?.toDate?.() || new Date(0);
+        return d.getTime() >= startOfMonth;
+      })
+      .reduce((sum, g) => sum + (g.monto || 0), 0);
+  }, [gastos]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -97,37 +116,65 @@ export default function GastosOperativos() {
 
   return (
     <PageContainer title="Gastos Operativos" description="Registrá los gastos diarios del negocio">
-      <div className="grid gap-6 lg:grid-cols-5">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-5">
         {/* Form + summary */}
         <div className="space-y-6 lg:col-span-2">
           {/* Summary cards */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-border">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-50">
-                  <Clock className="h-5 w-5 text-rose-500" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] text-gray-500">Gastos de hoy</p>
-                  <p className="mt-0.5 text-base font-bold text-gray-800">{formatCurrency(todayTotal)}</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
+              <div className="h-1 w-full bg-rose-500" />
+              <div className="p-4 sm:p-5">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-medium text-gray-500 sm:text-sm">Gastos de hoy</p>
+                    <p className="mt-1.5 text-lg font-bold tracking-tight text-gray-800 sm:text-xl">
+                      {formatCurrency(todayTotal)}
+                    </p>
+                  </div>
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 sm:h-12 sm:w-12">
+                    <Clock className="h-5 w-5 text-rose-500 sm:h-6 sm:w-6" />
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-border">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light">
-                  <TrendingUp className="h-5 w-5 text-primary" />
+
+            <div className="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
+              <div className="h-1 w-full bg-primary" />
+              <div className="p-4 sm:p-5">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-medium text-gray-500 sm:text-sm">Gastos de la semana</p>
+                    <p className="mt-1.5 text-lg font-bold tracking-tight text-gray-800 sm:text-xl">
+                      {formatCurrency(weekTotal)}
+                    </p>
+                  </div>
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light sm:h-12 sm:w-12">
+                    <TrendingUp className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] text-gray-500">Total general</p>
-                  <p className="mt-0.5 text-base font-bold text-gray-800">{formatCurrency(allTimeTotal)}</p>
+              </div>
+            </div>
+
+            <div className="group relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border transition-all hover:shadow-md">
+              <div className="h-1 w-full bg-rose-500" />
+              <div className="p-4 sm:p-5">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-medium text-gray-500 sm:text-sm">Gastos del mes</p>
+                    <p className="mt-1.5 text-lg font-bold tracking-tight text-gray-800 sm:text-xl">
+                      {formatCurrency(monthTotal)}
+                    </p>
+                  </div>
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 sm:h-12 sm:w-12">
+                    <Calendar className="h-5 w-5 text-rose-500 sm:h-6 sm:w-6" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-border">
+          <form onSubmit={handleSubmit} className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-border sm:p-5">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-700">
               <Receipt className="h-4 w-4 text-primary" />
               Nuevo gasto
@@ -144,7 +191,7 @@ export default function GastosOperativos() {
                   value={nombreGasto}
                   onChange={(e) => setNombreGasto(e.target.value)}
                   placeholder="Ej: Combustible, Delivery, Internet..."
-                  className={`mt-1 block w-full rounded-lg border px-4 py-2.5 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 ${
+                  className={`mt-1 block w-full rounded-lg border px-4 py-2 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 sm:py-2.5 ${
                     errors.nombreGasto
                       ? "border-red-300 focus:border-red-400 focus:ring-red/20"
                       : "border-gray-200 focus:border-primary focus:ring-primary/20"
@@ -168,7 +215,7 @@ export default function GastosOperativos() {
                     value={monto}
                     onChange={(e) => setMonto(e.target.value.replace(/[^0-9]/g, ""))}
                     placeholder="Ej: 50000"
-                    className={`block w-full rounded-lg border px-4 py-2.5 pr-12 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 ${
+                    className={`block w-full rounded-lg border px-4 py-2 pr-12 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 sm:py-2.5 ${
                       errors.monto
                         ? "border-red-300 focus:border-red-400 focus:ring-red/20"
                         : "border-gray-200 focus:border-primary focus:ring-primary/20"
@@ -186,7 +233,7 @@ export default function GastosOperativos() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 sm:py-2.5"
               >
                 {submitting ? (
                   <>
@@ -207,7 +254,7 @@ export default function GastosOperativos() {
         {/* Gastos list */}
         <div className="lg:col-span-3">
           <div className="rounded-xl bg-white shadow-sm ring-1 ring-border">
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-5 sm:py-4">
               <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-700">
                 <DollarSign className="h-4 w-4 text-primary" />
                 Gastos registrados
@@ -216,13 +263,13 @@ export default function GastosOperativos() {
             </div>
 
             {loading ? (
-              <div className="space-y-3 p-5">
+              <div className="space-y-3 p-4 sm:p-5">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-14 animate-pulse rounded-lg bg-gray-100" />
+                  <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-100 sm:h-14" />
                 ))}
               </div>
             ) : gastos.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="flex flex-col items-center justify-center px-4 py-10 text-center sm:py-12">
                 <Receipt className="h-10 w-10 text-gray-300" />
                 <p className="mt-3 text-sm text-gray-500">No hay gastos registrados</p>
                 <p className="text-xs text-gray-400">Usá el formulario para registrar tu primer gasto</p>
@@ -230,14 +277,14 @@ export default function GastosOperativos() {
             ) : (
               <ul className="divide-y divide-gray-100">
                 {gastos.map((gasto) => (
-                  <li key={gasto.id} className="flex items-center justify-between px-5 py-3.5 transition-colors hover:bg-gray-50/50">
+                  <li key={gasto.id} className="flex items-center justify-between px-4 py-3 transition-colors hover:bg-gray-50/50 sm:px-5 sm:py-3.5">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-gray-800">{gasto.nombreGasto}</p>
                       <p className="mt-0.5 text-xs text-gray-400">
                         {gasto.fecha ? formatDateShort(gasto.fecha) : formatDateShort(gasto.createdAt)}
                       </p>
                     </div>
-                    <div className="ml-4 shrink-0 text-right">
+                    <div className="ml-3 shrink-0 text-right sm:ml-4">
                       <p className="text-sm font-semibold text-gray-900">{formatCurrency(gasto.monto)}</p>
                     </div>
                   </li>

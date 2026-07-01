@@ -17,7 +17,7 @@ function formatCurrency(value) {
 
 export default function ClientCard({ client, onView, onEdit }) {
   return (
-    <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-border">
+    <div className="rounded-xl bg-white p-3 shadow-sm ring-1 ring-border sm:p-4">
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
           <button
@@ -46,7 +46,7 @@ export default function ClientCard({ client, onView, onEdit }) {
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-600">
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 sm:mt-3 sm:gap-x-4">
         <span className="flex items-center gap-1">
           <ShoppingBag className="h-3.5 w-3.5 text-gray-400" />
           {client.orderCount || 0} compra{(client.orderCount || 0) !== 1 ? "s" : ""}
@@ -56,7 +56,7 @@ export default function ClientCard({ client, onView, onEdit }) {
         </span>
       </div>
 
-      <p className="mt-1.5 text-[11px] text-gray-400">
+      <p className="mt-1 text-[11px] text-gray-400 sm:mt-1.5">
         Última compra: {formatDate(client.lastPurchaseDate)}
       </p>
     </div>

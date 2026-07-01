@@ -9,7 +9,7 @@ export default function ClientSearch({ value, onChange }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Buscar por nombre o teléfono..."
-        className="w-full rounded-lg border border-gray-200 py-2.5 pl-10 pr-10 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+        className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-10 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:py-2.5"
       />
       {value && (
         <button

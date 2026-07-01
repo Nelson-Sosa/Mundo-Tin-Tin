@@ -126,9 +126,9 @@ export default function Clients() {
   if (loading) {
     return (
       <PageContainer title="Clientes" description="Registro y consulta de clientes">
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-xl bg-gray-100" />
+            <div key={i} className="h-14 animate-pulse rounded-xl bg-gray-100 sm:h-16" />
           ))}
         </div>
       </PageContainer>
@@ -144,7 +144,7 @@ export default function Clients() {
           action={
             <button
               onClick={openCreateModal}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark sm:px-5 sm:py-2.5 sm:w-auto"
             >
               <Plus className="h-4 w-4" />
               Nuevo cliente
@@ -156,14 +156,14 @@ export default function Clients() {
           <EmptyClients onCreate={openCreateModal} />
         ) : (
           <>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="w-full sm:max-w-xs">
                 <ClientSearch value={search} onChange={(v) => { setSearch(v); setPage(1); }} />
               </div>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-700 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:py-2.5"
               >
                 <option value="name">Ordenar por nombre</option>
                 <option value="totalSpent">Ordenar por total gastado</option>
@@ -181,9 +181,9 @@ export default function Clients() {
               </div>
             ) : (
               <>
-                {/* Mobile */}
-                <div className="sm:hidden">
-                  <div className="grid gap-4">
+                {/* Mobile / Tablet */}
+                <div className="md:hidden">
+                  <div className="grid gap-3 sm:gap-4">
                     {paginated.map((client) => (
                       <ClientCard
                         key={client.id}
@@ -196,7 +196,7 @@ export default function Clients() {
                 </div>
 
                 {/* Desktop */}
-                <div className="hidden sm:block">
+                <div className="hidden md:block">
                   <ClientTable
                     clients={paginated}
                     onEdit={openEditModal}
@@ -208,7 +208,7 @@ export default function Clients() {
                   <div className="flex justify-center pt-2">
                     <button
                       onClick={() => setPage((p) => p + 1)}
-                      className="rounded-lg border border-gray-200 px-6 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50"
+                      className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 sm:px-6 sm:py-2.5"
                     >
                       Cargar más ({filtered.length - paginated.length} restantes)
                     </button>
