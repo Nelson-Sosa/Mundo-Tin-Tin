@@ -278,6 +278,7 @@ export default function Historial() {
       } catch (err) {
         const msg = err?.message || "";
         if (msg.includes("requires an index")) {
+          console.error("Índice compuesto requerido por Firestore:", err);
           toast.error("Se necesita crear un índice en Firebase. Revisá la consola del navegador para el link de creación.", { duration: 8000 });
         } else {
           toast.error("Error al cargar el historial");
