@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Store } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 function getGreeting() {
@@ -51,6 +51,18 @@ export default function Topbar({ onMenuClick }) {
         </p>
         <p className="text-xs text-gray-600">Bienvenido nuevamente</p>
       </div>
+
+      <a
+        href="/catalogo"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Ver catálogo público"
+        title="Ver catálogo público"
+        className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border bg-white px-3 py-2 text-sm font-medium text-gray-600 shadow-sm transition-all hover:border-primary hover:bg-primary-light hover:text-primary active:scale-[0.97] sm:px-4"
+      >
+        <Store className="h-4 w-4" />
+        <span className="hidden sm:inline">Ver Catálogo</span>
+      </a>
 
       <div className="relative" ref={dropdownRef}>
         <button
