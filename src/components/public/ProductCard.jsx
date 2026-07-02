@@ -26,7 +26,7 @@ function ProductCardBase({ product }) {
 
         {/* Badge de categoría */}
         {product.categoryName && (
-          <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2.5 py-0.5 text-[11px] font-medium text-gray-600 shadow-sm backdrop-blur-sm">
+          <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-gray-600 shadow-sm backdrop-blur-sm sm:px-2.5 sm:text-[11px]">
             {product.categoryName}
           </span>
         )}
@@ -42,21 +42,21 @@ function ProductCardBase({ product }) {
       </div>
 
       {/* Info del producto */}
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2">
+      <div className="flex flex-1 flex-col p-2.5 sm:p-4">
+        <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-gray-800 sm:text-sm">
           {product.name}
         </h3>
-        <p className="mt-1.5 text-base font-bold text-primary">
+        <p className="mt-1 text-sm font-bold text-primary sm:mt-1.5 sm:text-base">
           {formatCurrency(product.salePrice)}
         </p>
 
-        <div className="mt-auto pt-4">
+        <div className="mt-auto pt-2.5 sm:pt-4">
           <button
             onClick={() => navigate(`/catalogo/${product.id}`)}
-            className="flex w-full items-center justify-center gap-1 rounded-lg bg-primary-light py-2.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
+            className="flex w-full items-center justify-center gap-1 rounded-lg bg-primary-light py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary hover:text-white sm:py-2.5 sm:text-sm"
           >
             Ver detalles
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
         </div>
       </div>

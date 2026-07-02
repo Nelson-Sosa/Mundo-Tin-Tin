@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo } from "react";
-import { Search, SlidersHorizontal, X, Package, AlertCircle } from "lucide-react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { Search, SlidersHorizontal, X, Package } from "lucide-react";
 import { getActiveProducts } from "../../services/publicProductService";
 import ProductCard from "../../components/public/ProductCard";
+import BottomSheet from "../../components/ui/BottomSheet";
 
 const SORT_OPTIONS = [
   { value: "newest", label: "Más recientes" },
@@ -18,6 +19,8 @@ export default function Catalog() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sort, setSort] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
+  
+  const [visibleCount, setVisibleCount] = useState(20);
 
   useEffect(() => {
     getActiveProducts()
@@ -61,6 +64,28 @@ export default function Catalog() {
     return result;
   }, [products, search, selectedCategory, sort]);
 
+  // Infinite Scroll Observer
+  const observer = useRef();
+  const lastElementRef = useCallback((node) => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && visibleCount < filtered.length) {
+        setVisibleCount(prev => prev + 20);
+      }
+    });
+    
+    if (node) observer.current.observe(node);
+  }, [loading, filtered.length, visibleCount]);
+
+  // Reset visibleCount when filters change
+  useEffect(() => {
+    setVisibleCount(20);
+  }, [search, selectedCategory, sort]);
+
+  const visibleProducts = filtered.slice(0, visibleCount);
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}
@@ -73,8 +98,8 @@ export default function Catalog() {
         </p>
       </div>
 
-      {/* Search + Filter bar */}
-      <div className="space-y-2 sm:space-y-3">
+      {/* Sticky Search + Filter bar */}
+      <div className="sticky top-0 z-30 space-y-2 bg-white pb-3 pt-1 sm:space-y-3">
         <div className="relative lg:max-w-lg">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
@@ -95,10 +120,11 @@ export default function Catalog() {
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Categorías con Scroll Horizontal en Móvil */}
+          <div className="flex w-full items-center gap-2 overflow-x-auto pb-1 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0">
             <button
               onClick={() => setSelectedCategory("all")}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+              className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
                 selectedCategory === "all"
                   ? "bg-primary text-white"
                   : "bg-white text-gray-600 ring-1 ring-border hover:bg-primary-light hover:text-primary"
@@ -121,13 +147,12 @@ export default function Catalog() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <button
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={() => setShowFilters(true)}
               className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-600 ring-1 ring-border transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
             >
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              Ordenar
+              <SlidersHorizontal className="h-4 w-4" />
             </button>
 
             <div className="hidden items-center gap-1 lg:flex">
@@ -146,14 +171,18 @@ export default function Catalog() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Mobile sort selector */}
-        {showFilters && (
-          <div className="rounded-xl bg-white p-3 ring-1 ring-border lg:hidden">
-            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-              Ordenar por
-            </p>
-            <div className="flex flex-wrap gap-1.5">
+      {/* Bottom Sheet para Filtros y Orden (Mobile) */}
+      <BottomSheet 
+        isOpen={showFilters} 
+        onClose={() => setShowFilters(false)}
+        title="Filtros y Orden"
+      >
+        <div className="space-y-6">
+          <div>
+            <h3 className="mb-3 text-sm font-semibold text-gray-800">Ordenar por</h3>
+            <div className="flex flex-col gap-2">
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
@@ -161,30 +190,66 @@ export default function Catalog() {
                     setSort(opt.value);
                     setShowFilters(false);
                   }}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                     sort === opt.value
-                      ? "bg-primary text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-primary-light hover:text-primary"
+                      ? "bg-primary-light text-primary ring-1 ring-primary/30"
+                      : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                   }`}
                 >
                   {opt.label}
+                  {sort === opt.value && <div className="h-2 w-2 rounded-full bg-primary" />}
                 </button>
               ))}
             </div>
           </div>
-        )}
-      </div>
+          
+          <div>
+            <h3 className="mb-3 text-sm font-semibold text-gray-800">Categorías</h3>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => {
+                  setSelectedCategory("all");
+                  setShowFilters(false);
+                }}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  selectedCategory === "all"
+                    ? "bg-primary text-white"
+                    : "bg-gray-50 text-gray-600 ring-1 ring-border hover:bg-primary-light"
+                }`}
+              >
+                Todas
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setSelectedCategory(cat);
+                    setShowFilters(false);
+                  }}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    selectedCategory === cat
+                      ? "bg-primary text-white"
+                      : "bg-gray-50 text-gray-600 ring-1 ring-border hover:bg-primary-light"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </BottomSheet>
 
-      {/* Loading */}
+      {/* Loading Skeletons */}
       {loading && (
-        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border">
               <div className="aspect-square animate-pulse bg-gray-100" />
-              <div className="space-y-2 p-4">
-                <div className="h-3 w-3/4 animate-pulse rounded bg-gray-100" />
-                <div className="h-5 w-1/2 animate-pulse rounded bg-gray-100" />
-                <div className="h-9 w-full animate-pulse rounded-lg bg-gray-100" />
+              <div className="space-y-2 p-2.5 sm:p-4">
+                <div className="h-3 w-3/4 animate-pulse rounded bg-gray-100 sm:h-4" />
+                <div className="h-4 w-1/2 animate-pulse rounded bg-gray-100 sm:h-5" />
+                <div className="mt-4 h-8 w-full animate-pulse rounded-lg bg-gray-100 sm:h-9" />
               </div>
             </div>
           ))}
@@ -228,20 +293,36 @@ export default function Catalog() {
 
       {/* Product grid */}
       {!loading && filtered.length > 0 && (
-        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {visibleProducts.map((product, index) => {
+            if (visibleProducts.length === index + 1) {
+              return (
+                <div ref={lastElementRef} key={product.id}>
+                  <ProductCard product={product} />
+                </div>
+              );
+            } else {
+              return <ProductCard key={product.id} product={product} />;
+            }
+          })}
+        </div>
+      )}
+
+      {/* Loading more indicator */}
+      {!loading && visibleCount < filtered.length && (
+        <div className="flex justify-center py-6">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         </div>
       )}
 
       {/* Results count */}
       {!loading && filtered.length > 0 && (
-        <p className="text-center text-xs text-gray-400">
-          {filtered.length} producto{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
+        <p className="pb-8 text-center text-xs text-gray-400">
+          Mostrando {visibleProducts.length} de {filtered.length} producto{filtered.length !== 1 ? "s" : ""}
         </p>
       )}
 
     </div>
   );
 }
+
