@@ -713,6 +713,7 @@ export default function Pedidos() {
         setHasMore(result.hasMore);
         if (reset) setPage(1);
       } catch (err) {
+        console.error("Error de Firestore:", err); // Asegura que el link del índice se muestre en consola
         const msg = err?.message || "";
         if (msg.includes("requires an index")) {
           toast.error("Se necesita crear un índice en Firebase. Revisá la consola del navegador.", { duration: 8000 });
