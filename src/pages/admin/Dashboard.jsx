@@ -91,7 +91,7 @@ const statDefs = [
 // ---------------------------------------------------------------------------
 function OrderCard({ order, onView }) {
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-white p-4 shadow-sm">
+    <div className="flex flex-col gap-2 xs:gap-3 rounded-xl border border-border bg-white p-3 xs:p-4 shadow-sm">
       {/* Fila 1: fecha + estado */}
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-medium text-gray-500">
@@ -161,7 +161,7 @@ export default function Dashboard() {
       {/* Stat cards                                                          */}
       {/* Mobile: 2 columnas | Tablet: 3 columnas | Desktop: 4 columnas      */}
       {/* ------------------------------------------------------------------ */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {statDefs.map((stat) => {
           let value = null;
 
@@ -204,7 +204,7 @@ export default function Dashboard() {
         <div className="mt-4 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border">
           {/* Skeleton de carga */}
           {loading ? (
-            <div className="space-y-3 p-4 sm:p-5">
+            <div className="space-y-2 xs:space-y-3 p-3 xs:p-4 sm:p-5">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="h-12 animate-pulse rounded-lg bg-gray-100" />
               ))}
@@ -229,7 +229,7 @@ export default function Dashboard() {
                 MOBILE / TABLET (< lg): cards apiladas, una por venta.
                 Evita el scroll horizontal y mejora la legibilidad táctil.
               */}
-              <div className="flex flex-col divide-y divide-gray-100 p-3 sm:p-4 lg:hidden">
+              <div className="flex flex-col divide-y divide-gray-100 p-2 xs:p-3 sm:p-4 lg:hidden">
                 {data.recentOrders.map((order) => (
                   <div key={order.id} className="py-3 first:pt-0 last:pb-0">
                     <OrderCard

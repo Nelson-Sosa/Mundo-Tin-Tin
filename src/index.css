@@ -8,6 +8,7 @@
   --color-border: #F8D3E4;
   --color-danger: #FB7185;
   --color-success: #10B981;
+  --breakpoint-xs: 480px;
 }
 
 @layer base {
