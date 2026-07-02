@@ -140,10 +140,6 @@ export default function Products() {
     } catch (err) {
       if (err instanceof ValidationError) {
         toast.error("Corrige los errores en el formulario");
-      } else if (err.message === "DUPLICATE_PRODUCT") {
-        toast.error(
-          "Ya existe un producto con ese nombre en la misma categoría"
-        );
       } else if (err.message === "DUPLICATE_SKU") {
         toast.error("Ya existe un producto con ese SKU");
       } else {
@@ -151,16 +147,6 @@ export default function Products() {
       }
     } finally {
       setModalLoading(false);
-    }
-  }
-
-  async function handleDuplicate(prod) {
-    try {
-      await productService.duplicateProduct(prod.id, user.uid);
-      toast.success("Producto duplicado correctamente");
-      reload();
-    } catch {
-      toast.error("Ocurrió un error al duplicar el producto");
     }
   }
 
@@ -283,7 +269,6 @@ export default function Products() {
                         product={prod}
                         onViewDetail={handleViewDetail}
                         onEdit={openEditModal}
-                        onDuplicate={handleDuplicate}
                         onToggleStatus={handleToggleStatus}
                         onDelete={confirmDelete}
                       />
@@ -296,7 +281,6 @@ export default function Products() {
                     products={filtered}
                     onViewDetail={handleViewDetail}
                     onEdit={openEditModal}
-                    onDuplicate={handleDuplicate}
                     onToggleStatus={handleToggleStatus}
                     onDelete={confirmDelete}
                   />

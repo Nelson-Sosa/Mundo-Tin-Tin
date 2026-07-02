@@ -1,6 +1,5 @@
 import {
   Pencil,
-  Copy,
   EyeOff,
   Eye,
   Trash2,
@@ -12,7 +11,7 @@ import StockBadge from "./StockBadge";
 import { getThumbImage } from "../../lib/cloudinary";
 import { formatCurrency } from "../../utils/formatCurrency";
 
-export default function ProductCard({ product, onEdit, onDuplicate, onToggleStatus, onDelete, onViewDetail }) {
+export default function ProductCard({ product, onEdit, onToggleStatus, onDelete, onViewDetail }) {
   const mainImage = getThumbImage(product.images?.[0], 80);
   const isLowStock = product.stock <= product.minimumStock && product.stock > 0;
   const isOutOfStock = product.stock <= 0;
@@ -78,13 +77,6 @@ export default function ProductCard({ product, onEdit, onDuplicate, onToggleStat
         >
           <Pencil className="h-3.5 w-3.5" />
           Editar
-        </button>
-        <button
-          onClick={() => onDuplicate(product)}
-          className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600"
-        >
-          <Copy className="h-3.5 w-3.5" />
-          Duplicar
         </button>
         <button
           onClick={() => onToggleStatus(product)}

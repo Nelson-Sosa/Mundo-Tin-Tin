@@ -1,10 +1,10 @@
-import { Pencil, Copy, EyeOff, Eye, Trash2, ImageOff, Search } from "lucide-react";
+import { Pencil, EyeOff, Eye, Trash2, ImageOff, Search } from "lucide-react";
 import ProductStatusBadge from "./ProductStatusBadge";
 import StockBadge from "./StockBadge";
 import { getThumbImage } from "../../lib/cloudinary";
 import { formatCurrency } from "../../utils/formatCurrency";
 
-export default function ProductTable({ products, onEdit, onDuplicate, onToggleStatus, onDelete, onViewDetail }) {
+export default function ProductTable({ products, onEdit, onToggleStatus, onDelete, onViewDetail }) {
   return (
     <div className="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-border">
       <table className="w-full text-left text-sm">
@@ -105,13 +105,6 @@ export default function ProductTable({ products, onEdit, onDuplicate, onToggleSt
                       title="Editar"
                     >
                       <Pencil className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => onDuplicate(prod)}
-                      className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
-                      title="Duplicar"
-                    >
-                      <Copy className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => onToggleStatus(prod)}
