@@ -119,38 +119,45 @@ export default function Catalog() {
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-3">
-          {/* Categorías con Scroll Horizontal en Móvil */}
-          <div className="flex w-full items-center gap-2 overflow-x-auto pb-1 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:w-auto sm:flex-wrap sm:px-0">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-                selectedCategory === "all"
-                  ? "bg-primary text-white"
-                  : "bg-white text-gray-600 ring-1 ring-border hover:bg-primary-light hover:text-primary"
-              }`}
-            >
-              Todas
-            </button>
-            {categories.map((cat) => (
+        {/* Categorías y Botón de Filtros */}
+        <div className="mb-4 flex items-center gap-4 sm:mb-5">
+          {/* Scroll de categorías */}
+          <div className="flex flex-1 items-center overflow-x-auto hide-scrollbar snap-x snap-mandatory py-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="flex items-center gap-2.5">
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-                  selectedCategory === cat
-                    ? "bg-primary text-white"
+                onClick={() => setSelectedCategory("all")}
+                className={`snap-start whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  selectedCategory === "all"
+                    ? "bg-primary text-white shadow-sm"
                     : "bg-white text-gray-600 ring-1 ring-border hover:bg-primary-light hover:text-primary"
                 }`}
               >
-                {cat}
+                Todas
               </button>
-            ))}
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`snap-start whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    selectedCategory === cat
+                      ? "bg-primary text-white shadow-sm"
+                      : "bg-white text-gray-600 ring-1 ring-border hover:bg-primary-light hover:text-primary"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
+          {/* Botones de orden/filtros */}
+          <div className="relative flex shrink-0 items-center pl-1 sm:pl-0">
+            {/* Gradiente sutil para separar visualmente en móvil si es necesario */}
+            <div className="pointer-events-none absolute -left-6 bottom-0 top-0 w-6 bg-gradient-to-r from-transparent to-white lg:hidden" />
+            
             <button
               onClick={() => setShowFilters(true)}
-              className="flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-medium text-gray-600 ring-1 ring-border transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
+              className="relative flex items-center gap-1.5 rounded-full bg-white p-2.5 text-gray-600 shadow-sm ring-1 ring-border transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
             >
               <SlidersHorizontal className="h-4 w-4" />
             </button>
