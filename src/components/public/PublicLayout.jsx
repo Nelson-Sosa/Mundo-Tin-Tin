@@ -1,5 +1,6 @@
 import { Outlet, Link } from "react-router-dom";
 import { LogIn } from "lucide-react";
+import WhatsappFloat from "./WhatsappFloat";
 
 export default function PublicLayout() {
   return (
@@ -36,6 +37,8 @@ export default function PublicLayout() {
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         <Outlet />
       </main>
+
+      <WhatsappFloat />
 
       <footer className="border-t border-border bg-white py-6 text-center text-xs text-gray-400">
         &copy; {new Date().getFullYear()} Mundo TIN-TIN &mdash; Todos los derechos reservados.

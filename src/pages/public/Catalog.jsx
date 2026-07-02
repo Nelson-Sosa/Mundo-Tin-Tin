@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { Search, SlidersHorizontal, X, Package, AlertCircle } from "lucide-react";
 import { getActiveProducts } from "../../services/publicProductService";
 import ProductCard from "../../components/public/ProductCard";
-import WhatsAppButton from "../../components/public/WhatsAppButton";
 
 const SORT_OPTIONS = [
   { value: "newest", label: "Más recientes" },
@@ -243,8 +242,6 @@ export default function Catalog() {
         </p>
       )}
 
-      {/* Floating WhatsApp */}
-      <WhatsAppButton variant="floating" />
     </div>
   );
 }
