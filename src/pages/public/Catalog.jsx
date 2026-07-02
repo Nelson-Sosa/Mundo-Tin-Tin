@@ -62,7 +62,7 @@ export default function Catalog() {
   }, [products, search, selectedCategory, sort]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-gray-800 sm:text-2xl">
@@ -74,7 +74,7 @@ export default function Catalog() {
       </div>
 
       {/* Search + Filter bar */}
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         <div className="relative lg:max-w-lg">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
@@ -149,11 +149,11 @@ export default function Catalog() {
 
         {/* Mobile sort selector */}
         {showFilters && (
-          <div className="rounded-xl bg-white p-4 ring-1 ring-border lg:hidden">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+          <div className="rounded-xl bg-white p-3 ring-1 ring-border lg:hidden">
+            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
               Ordenar por
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
@@ -161,7 +161,7 @@ export default function Catalog() {
                     setSort(opt.value);
                     setShowFilters(false);
                   }}
-                  className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-colors ${
+                  className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                     sort === opt.value
                       ? "bg-primary text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-primary-light hover:text-primary"
@@ -177,7 +177,7 @@ export default function Catalog() {
 
       {/* Loading */}
       {loading && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-border">
               <div className="aspect-square animate-pulse bg-gray-100" />
@@ -228,7 +228,7 @@ export default function Catalog() {
 
       {/* Product grid */}
       {!loading && filtered.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
