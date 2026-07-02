@@ -120,13 +120,13 @@ export default function Catalog() {
         </div>
 
         {/* Categorías y Botón de Filtros */}
-        <div className="mb-4 flex sm:items-start items-center gap-2 sm:gap-4 sm:mb-5">
+        <div className="mb-4 flex items-center gap-2 sm:gap-4 sm:mb-5">
           {/* Scroll de categorías (móvil) / Wrap (desktop) */}
-          <div className="flex flex-1 items-center overflow-x-auto sm:overflow-visible hide-scrollbar snap-x snap-mandatory py-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:py-0">
-            <div className="flex items-center sm:flex-wrap gap-2 sm:gap-2.5">
+          <div className="relative flex min-w-0 flex-1 items-center overflow-x-auto sm:overflow-visible hide-scrollbar snap-x snap-proximity py-1 sm:py-0">
+            <div className="flex items-center flex-nowrap sm:flex-wrap gap-2 sm:gap-2.5">
               <button
                 onClick={() => setSelectedCategory("all")}
-                className={`snap-start whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:px-3.5 sm:py-1.5 ${
+                className={`shrink-0 snap-start whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:px-3.5 sm:py-1.5 ${
                   selectedCategory === "all"
                     ? "bg-primary text-white shadow-sm"
                     : "bg-white text-gray-600 ring-1 ring-border hover:bg-primary-light hover:text-primary"
@@ -138,7 +138,7 @@ export default function Catalog() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`snap-start whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:px-3.5 sm:py-1.5 ${
+                  className={`shrink-0 snap-start whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors sm:px-3.5 sm:py-1.5 ${
                     selectedCategory === cat
                       ? "bg-primary text-white shadow-sm"
                       : "bg-white text-gray-600 ring-1 ring-border hover:bg-primary-light hover:text-primary"
@@ -148,16 +148,16 @@ export default function Catalog() {
                 </button>
               ))}
             </div>
+
+            {/* Fade gradient: affordance visual de que hay más chips a la derecha */}
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-white via-white/90 to-transparent lg:hidden" />
           </div>
 
-          {/* Botones de orden/filtros */}
-          <div className="relative flex shrink-0 items-center pl-1 sm:pl-0">
-            {/* Gradiente sutil para separar visualmente en móvil si es necesario */}
-            <div className="pointer-events-none absolute -left-6 bottom-0 top-0 w-6 bg-gradient-to-r from-transparent to-white lg:hidden" />
-            
+          {/* Botón Ordenar (siempre visible, fuera del scroll) */}
+          <div className="shrink-0">
             <button
               onClick={() => setShowFilters(true)}
-              className="relative flex items-center justify-center h-7 w-7 rounded-full bg-white text-gray-600 shadow-sm ring-1 ring-border transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
+              className="flex items-center justify-center h-7 w-7 rounded-full bg-white text-gray-600 shadow-sm ring-1 ring-border transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
             </button>
