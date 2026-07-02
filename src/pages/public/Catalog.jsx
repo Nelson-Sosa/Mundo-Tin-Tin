@@ -122,11 +122,11 @@ export default function Catalog() {
         {/* Categorías y Botón de Filtros */}
         <div className="mb-4 flex sm:items-start items-center gap-2 sm:gap-4 sm:mb-5">
           {/* Scroll de categorías (móvil) / Wrap (desktop) */}
-          <div className="flex flex-1 items-center overflow-x-auto sm:overflow-visible hide-scrollbar snap-x snap-mandatory py-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:py-0">
-            <div className="flex items-center sm:flex-wrap gap-2 sm:gap-2.5">
+          <div className="flex flex-1 items-center overflow-x-auto sm:overflow-visible hide-scrollbar snap-x snap-proximity py-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:py-0">
+            <div className="flex items-center flex-nowrap sm:flex-wrap gap-2 sm:gap-2.5">
               <button
                 onClick={() => setSelectedCategory("all")}
-                className={`snap-start whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors sm:px-3.5 sm:py-1.5 sm:text-xs ${
+                className={`snap-start shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors sm:px-3.5 sm:py-1.5 sm:text-xs ${
                   selectedCategory === "all"
                     ? "bg-primary text-white shadow-sm"
                     : "bg-white text-gray-600 ring-1 ring-border hover:bg-primary-light hover:text-primary"
@@ -138,7 +138,7 @@ export default function Catalog() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`snap-start whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors sm:px-3.5 sm:py-1.5 sm:text-xs ${
+                  className={`snap-start shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors sm:px-3.5 sm:py-1.5 sm:text-xs ${
                     selectedCategory === cat
                       ? "bg-primary text-white shadow-sm"
                       : "bg-white text-gray-600 ring-1 ring-border hover:bg-primary-light hover:text-primary"
