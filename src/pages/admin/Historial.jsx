@@ -476,18 +476,7 @@ export default function Historial() {
           </div>
         </div>
 
-        {/* Disabled vendedor filter — activate when multi-user is implemented */}
-        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-gray-50 px-2.5 py-1.5 sm:mt-3 sm:flex-nowrap sm:gap-2 sm:px-3 sm:py-2">
-          <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider sm:text-[11px]">
-            Vendedor
-          </span>
-          <span className="rounded bg-gray-200 px-1.5 py-0.5 text-[9px] font-medium text-gray-500 sm:px-2 sm:text-[10px]">
-            Próximamente
-          </span>
-          <p className="w-full text-[10px] text-gray-400 sm:w-auto sm:text-[11px]">
-            Activar cuando existan múltiples usuarios/vendedores
-          </p>
-        </div>
+
       </div>
 
       {/* Desktop Table */}
