@@ -45,6 +45,8 @@ export default function ProductTable({ products, onEdit, onDuplicate, onToggleSt
                         <img
                           src={mainImage}
                           alt={prod.name}
+                          loading="lazy"
+                          decoding="async"
                           className="h-full w-full object-cover"
                         />
                       ) : (

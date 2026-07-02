@@ -25,6 +25,8 @@ export default function ProductCard({ product, onEdit, onDuplicate, onToggleStat
             <img
               src={mainImage}
               alt={product.name}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
             />
           ) : (

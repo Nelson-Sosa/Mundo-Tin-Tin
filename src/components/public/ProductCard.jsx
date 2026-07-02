@@ -1,9 +1,10 @@
+import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import ProductImage from "../ui/ProductImage";
 import { formatCurrency } from "../../utils/formatCurrency";
 
-export default function ProductCard({ product }) {
+function ProductCardBase({ product }) {
   const navigate = useNavigate();
   const image =
     Array.isArray(product.images) && product.images.length > 0
@@ -62,3 +63,6 @@ export default function ProductCard({ product }) {
     </div>
   );
 }
+
+const ProductCard = memo(ProductCardBase);
+export default ProductCard;
