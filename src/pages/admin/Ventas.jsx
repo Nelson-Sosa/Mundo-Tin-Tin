@@ -509,10 +509,10 @@ export default function Ventas() {
   // ─── Render ────────────────────────────────────────────────
   return (
     <PageContainer title="Ventas" description="Registrar una venta">
-      <div className="flex flex-col gap-4 xl:flex-row xl:gap-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
 
         {/* ── Panel izquierdo: productos ── */}
-        <div className="flex-1 min-w-0 space-y-4 pb-28 xl:pb-0">
+        <div className="flex-1 min-w-0 space-y-4 pb-28 lg:pb-0">
 
           {/* Buscador sticky en desktop */}
           <div className="lg:sticky lg:top-0 lg:z-10 lg:bg-background-secondary lg:pb-2 space-y-3">
@@ -578,7 +578,7 @@ export default function Ventas() {
         </div>
 
         {/* ── Panel carrito — laptop/desktop ── */}
-        <div className="hidden xl:flex xl:w-96 flex-col rounded-xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.1)] ring-1 ring-gray-200/80 max-h-[calc(100vh-10rem)]">
+        <div className="hidden lg:flex lg:w-80 xl:w-96 flex-col rounded-xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.1)] ring-1 ring-gray-200/80 max-h-[calc(100vh-10rem)] overflow-hidden min-h-0">
           <CartPanel
             variant="desktop"
             cart={cart}
@@ -606,7 +606,7 @@ export default function Ventas() {
 
       {/* ── Mobile: Bottom bar flotante ── */}
       {cart.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white px-3 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] xl:hidden sm:px-4 sm:py-3">
+        <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white px-3 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] lg:hidden sm:px-4 sm:py-3">
           <button
             onClick={() => setCartOpen(true)}
             className="flex w-full items-center justify-between rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-sm transition-all active:scale-[0.98] sm:px-5 sm:py-3.5"
@@ -627,7 +627,7 @@ export default function Ventas() {
 
       {/* ── Mobile/Tablet: Bottom sheet ── */}
       {cartOpen && (
-        <div className="fixed inset-0 z-40 xl:hidden">
+        <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setCartOpen(false)} />
           <div
             ref={sheetRef}
