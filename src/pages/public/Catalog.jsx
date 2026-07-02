@@ -148,9 +148,6 @@ export default function Catalog() {
                 </button>
               ))}
             </div>
-
-            {/* Fade gradient: affordance visual de que hay más chips a la derecha */}
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-white via-white/90 to-transparent lg:hidden" />
           </div>
 
           {/* Botón Ordenar (siempre visible, fuera del scroll) */}
