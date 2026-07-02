@@ -15,6 +15,7 @@ import Historial from "./pages/admin/Historial";
 import Clients from "./pages/admin/Clients";
 import ClientDetail from "./pages/admin/ClientDetail";
 import GastosOperativos from "./pages/admin/GastosOperativos";
+import Pedidos from "./pages/admin/Pedidos";
 import PublicLayout from "./components/public/PublicLayout";
 import Catalog from "./pages/public/Catalog";
 import ProductPublicDetail from "./pages/public/ProductPublicDetail";
@@ -48,6 +49,7 @@ function App() {
             <Route path="clientes" element={<Clients />} />
             <Route path="clientes/:id" element={<ClientDetail />} />
             <Route path="gastos" element={<GastosOperativos />} />
+            <Route path="pedidos" element={<Pedidos />} />
           </Route>
 
           <Route path="/catalogo" element={<PublicLayout />}>

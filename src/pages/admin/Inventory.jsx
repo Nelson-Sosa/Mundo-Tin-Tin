@@ -106,24 +106,17 @@ export default function Inventory() {
                   <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
                     Producto
                   </th>
-                  <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
-                    SKU
-                  </th>
+                  <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">SKU</th>
                   <th className="px-4 py-3.5">
-                    <button
-                      onClick={handleSort}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 transition-colors hover:text-gray-700"
-                    >
-                      Stock
+                    <button onClick={handleSort} className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 transition-colors hover:text-gray-700">
+                      Stock físico
                       <SortIcon className="h-3.5 w-3.5" />
                     </button>
                   </th>
-                  <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
-                    Stock mínimo
-                  </th>
-                  <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
-                    Estado
-                  </th>
+                  <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-amber-600">Reservado</th>
+                  <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-emerald-600">Disponible</th>
+                  <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">Stock mínimo</th>
+                  <th className="px-4 py-3.5 text-xs font-semibold uppercase tracking-wider text-gray-500">Estado</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -141,20 +134,26 @@ export default function Inventory() {
                       onClick={() => navigate(`/admin/productos/${prod.id}`)}
                       className="cursor-pointer transition-colors hover:bg-gray-50/50"
                     >
-                      <td className="px-4 py-3.5 font-medium text-gray-800">
-                        {prod.name}
-                      </td>
-                      <td className="px-4 py-3.5 text-xs text-gray-400">
-                        {prod.sku || "—"}
+                      <td className="px-4 py-3.5 font-medium text-gray-800">{prod.name}</td>
+                      <td className="px-4 py-3.5 text-xs text-gray-400">{prod.sku || "—"}</td>
+                      <td className="px-4 py-3.5">
+                        <span className={`text-sm font-bold ${stockColor}`}>{prod.stock}</span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className={`text-sm font-bold ${stockColor}`}>
-                          {prod.stock}
-                        </span>
+                        {(prod.stockReservado ?? 0) > 0 ? (
+                          <span className="text-sm font-semibold text-amber-600">{prod.stockReservado}</span>
+                        ) : (
+                          <span className="text-sm text-gray-400">0</span>
+                        )}
                       </td>
-                      <td className="px-4 py-3.5 text-sm text-gray-600">
-                        {prod.minimumStock}
+                      <td className="px-4 py-3.5">
+                        {(() => {
+                          const disponible = prod.stock - (prod.stockReservado ?? 0);
+                          const dispColor = disponible <= 0 ? "text-red-500" : disponible <= (prod.minimumStock || 5) ? "text-amber-500" : "text-emerald-600";
+                          return <span className={`text-sm font-bold ${dispColor}`}>{disponible}</span>;
+                        })()}
                       </td>
+                      <td className="px-4 py-3.5 text-sm text-gray-600">{prod.minimumStock}</td>
                       <td className="px-4 py-3.5">
                         <StockBadge stock={prod.stock} minimumStock={prod.minimumStock} />
                       </td>

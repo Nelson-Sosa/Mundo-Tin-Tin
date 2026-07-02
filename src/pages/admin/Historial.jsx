@@ -103,6 +103,15 @@ function OrderDetailModal({ order, onClose }) {
               <p className="text-gray-500">Método de pago</p>
               <PaymentBadge method={order.paymentMethod} />
             </div>
+            {order.pedidoId && (
+              <div className="col-span-2">
+                <p className="text-gray-500">Originado desde</p>
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary-light px-2.5 py-0.5 text-[11px] font-medium text-primary">
+                  <FileText className="h-3 w-3" />
+                  Pedido #{order.pedidoId.slice(0, 8)}…
+                </span>
+              </div>
+            )}
           </div>
 
           <div>
@@ -339,7 +348,12 @@ export default function Historial() {
     setCancelling(true);
     try {
       await orderService.cancelOrder(cancelTarget.id, user?.uid);
-      toast.success("Venta anulada correctamente");
+      const hadPedido = !!cancelTarget.pedidoId;
+      toast.success(
+        hadPedido
+          ? "Venta anulada — stock restituido y pedido marcado cancelado"
+          : "Venta anulada correctamente",
+      );
       setOrders((prev) =>
         prev.map((o) =>
           o.id === cancelTarget.id ? { ...o, status: "cancelled", cancelledAt: new Date() } : o,

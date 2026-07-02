@@ -40,8 +40,16 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // Orders collection
+    // Orders collection (POS sales + sales generated from delivered pedidos)
     match /orders/{orderId} {
+      allow read: if isAuthenticated();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // Pedidos collection (orders with multi-state lifecycle and stock reservation)
+    match /pedidos/{pedidoId} {
       allow read: if isAuthenticated();
       allow create: if isAdmin();
       allow update: if isAdmin();

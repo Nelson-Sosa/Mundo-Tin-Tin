@@ -13,6 +13,12 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
+import {
+  applyStockDecrement,
+  applyStockReservationRelease,
+  applyDeliveryStockUpdate,
+  getProductRef,
+} from "./stockUtils";
 
 const ORDERS_COLLECTION = "orders";
 const PRODUCTS_COLLECTION = "products";
@@ -27,7 +33,8 @@ export async function createOrder({ items, subtotal, discountType, discountValue
   const orderDocRef = doc(ordersColRef);
 
   await runTransaction(db, async (transaction) => {
-    const productRefs = items.map((item) => doc(db, PRODUCTS_COLLECTION, item.productId));
+    // ── Reads first (Firestore rule) ─────────────────────────────────────
+    const productRefs = items.map((item) => getProductRef(item.productId));
 
     const productSnaps = await Promise.all(
       productRefs.map((ref) => transaction.get(ref)),
@@ -38,6 +45,7 @@ export async function createOrder({ items, subtotal, discountType, discountValue
       clientSnap = await transaction.get(doc(db, CLIENTS_COLLECTION, clientId));
     }
 
+    // ── Validate stock ───────────────────────────────────────────────────
     for (let i = 0; i < items.length; i++) {
       const snap = productSnaps[i];
       const item = items[i];
@@ -50,14 +58,9 @@ export async function createOrder({ items, subtotal, discountType, discountValue
       }
     }
 
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      transaction.update(productRefs[i], {
-        stock: (productSnaps[i].data().stock ?? 0) - item.quantity,
-        updatedAt: serverTimestamp(),
-        updatedBy: userId,
-      });
-    }
+    // ── Writes ───────────────────────────────────────────────────────────
+    // Shared utility — same logic used by pedidoService delivery flow
+    applyStockDecrement(transaction, productRefs, productSnaps, items, userId);
 
     const orderData = {
       items: items.map(({ productId, name, sku, quantity, unitPrice, subtotal }) => ({
@@ -76,6 +79,8 @@ export async function createOrder({ items, subtotal, discountType, discountValue
       paymentMethod,
       clientName: clientName?.trim() || null,
       status: "completed",
+      // POS sales never originate from a pedido
+      pedidoId: null,
       createdBy: userId,
       createdAt: serverTimestamp(),
     };
@@ -208,10 +213,13 @@ export async function getOrderSummary() {
   };
 }
 
+const PEDIDOS_COLLECTION = "pedidos";
+
 export async function cancelOrder(orderId, userId) {
   const orderRef = doc(db, ORDERS_COLLECTION, orderId);
 
   await runTransaction(db, async (transaction) => {
+    // ── Reads first ──────────────────────────────────────────────────────
     const orderSnap = await transaction.get(orderRef);
     if (!orderSnap.exists()) throw new Error("ORDER_NOT_FOUND");
 
@@ -219,33 +227,68 @@ export async function cancelOrder(orderId, userId) {
     const currentStatus = order.status || "completed";
     if (currentStatus === "cancelled") throw new Error("ORDER_ALREADY_CANCELLED");
 
-    for (const item of order.items || []) {
-      if (!item.productId) continue;
-      const productRef = doc(db, PRODUCTS_COLLECTION, item.productId);
-      const productSnap = await transaction.get(productRef);
-      if (productSnap.exists()) {
-        transaction.update(productRef, {
-          stock: (productSnap.data().stock ?? 0) + (item.quantity || 0),
-          updatedAt: serverTimestamp(),
-          updatedBy: userId,
-        });
-      }
+    // Read product snapshots for stock restoration
+    const productRefs = (order.items || [])
+      .filter((item) => item.productId)
+      .map((item) => getProductRef(item.productId));
+    const productSnaps = await Promise.all(
+      productRefs.map((ref) => transaction.get(ref)),
+    );
+
+    // Read client snapshot if present
+    let clientSnap = null;
+    if (order.clientId) {
+      clientSnap = await transaction.get(doc(db, CLIENTS_COLLECTION, order.clientId));
     }
 
+    // If this order originated from a pedido, read that document too
+    let pedidoSnap = null;
+    if (order.pedidoId) {
+      pedidoSnap = await transaction.get(doc(db, PEDIDOS_COLLECTION, order.pedidoId));
+    }
+
+    // ── Writes ───────────────────────────────────────────────────────────
+    // Restore physical stock for each item
+    const validItems = (order.items || []).filter((item) => item.productId);
+    for (let i = 0; i < productRefs.length; i++) {
+      if (!productSnaps[i].exists()) continue;
+      const data = productSnaps[i].data();
+      const item = validItems[i];
+      transaction.update(productRefs[i], {
+        stock: (data.stock ?? 0) + (item.quantity || 0),
+        updatedAt: serverTimestamp(),
+        updatedBy: userId,
+      });
+    }
+
+    // Mark order as cancelled
     transaction.update(orderRef, {
       status: "cancelled",
       cancelledAt: serverTimestamp(),
       cancelledBy: userId,
     });
 
-    if (order.clientId) {
-      const clientRef = doc(db, CLIENTS_COLLECTION, order.clientId);
-      const clientSnap = await transaction.get(clientRef);
-      if (clientSnap.exists()) {
-        const clientData = clientSnap.data();
-        transaction.update(clientRef, {
-          orderCount: Math.max(0, (clientData.orderCount || 0) - 1),
-          totalSpent: Math.max(0, (clientData.totalSpent || 0) - (order.total || 0)),
+    // Update client stats
+    if (clientSnap?.exists()) {
+      const clientData = clientSnap.data();
+      transaction.update(doc(db, CLIENTS_COLLECTION, order.clientId), {
+        orderCount: Math.max(0, (clientData.orderCount || 0) - 1),
+        totalSpent: Math.max(0, (clientData.totalSpent || 0) - (order.total || 0)),
+      });
+    }
+
+    // If this sale came from a pedido, mark the pedido as cancelled too.
+    // stockReservado was already decremented when the pedido was delivered, so
+    // we only need to restore physical stock (done above) and update the status.
+    if (pedidoSnap?.exists()) {
+      const pedidoData = pedidoSnap.data();
+      // Only revert if the pedido was in delivered state (sanity check)
+      if (pedidoData.status === "delivered") {
+        transaction.update(doc(db, PEDIDOS_COLLECTION, order.pedidoId), {
+          status: "cancelled",
+          cancelledAt: serverTimestamp(),
+          cancelledBy: userId,
+          cancelReason: "sale_annulled",
         });
       }
     }

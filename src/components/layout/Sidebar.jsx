@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  ClipboardList,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -19,6 +20,7 @@ const mainNav = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Ventas", href: "/admin/ventas", icon: ShoppingCart },
   { name: "Historial", href: "/admin/historial", icon: History },
+  { name: "Pedidos", href: "/admin/pedidos", icon: ClipboardList },
   { name: "Clientes", href: "/admin/clientes", icon: Users },
   { name: "Gastos", href: "/admin/gastos", icon: DollarSign },
   { name: "Productos", href: "/admin/productos", icon: Package },
