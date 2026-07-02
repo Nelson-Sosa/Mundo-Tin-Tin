@@ -394,13 +394,6 @@ export default function ProductPublicDetail() {
         </div>
       )}
 
-      {/* WhatsApp flotante */}
-      <WhatsAppButton
-        productName={product.name}
-        productPrice={formatCurrency(product.salePrice)}
-        variant="floating"
-      />
-
       {/* Lightbox de zoom — se monta solo cuando se abre */}
       {lightboxOpen && images.length > 0 && (
         <ZoomLightbox
