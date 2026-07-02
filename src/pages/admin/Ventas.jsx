@@ -578,7 +578,8 @@ export default function Ventas() {
         </div>
 
         {/* ── Panel carrito — laptop/desktop ── */}
-        <div className="hidden lg:flex lg:w-80 xl:w-96 flex-col rounded-xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.1)] ring-1 ring-gray-200/80 max-h-[calc(100vh-10rem)] overflow-hidden min-h-0">
+        <div className="hidden lg:block lg:w-80 xl:w-96 shrink-0">
+        <div className="sticky top-0 flex flex-col rounded-xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.1)] ring-1 ring-gray-200/80 h-[calc(100vh-8rem)] overflow-hidden">
           <CartPanel
             variant="desktop"
             cart={cart}
@@ -601,6 +602,7 @@ export default function Ventas() {
             onUpdateQuantity={updateQuantity}
             onRemoveFromCart={removeFromCart}
           />
+        </div>
         </div>
       </div>
 
