@@ -517,9 +517,9 @@ function CreatePedidoModal({ onClose, onCreated, userId }) {
           </button>
         </div>
 
-        <div className="flex flex-1 min-h-0 overflow-hidden">
+        <div className="flex flex-1 min-h-0 overflow-hidden flex-col lg:flex-row">
           {/* Product selector */}
-          <div className="flex-1 flex flex-col border-r border-border min-w-0">
+          <div className="lg:flex-1 flex flex-col border-b lg:border-b-0 lg:border-r border-border min-w-0 max-h-[40vh] lg:max-h-none">
             <div className="p-3 border-b border-border shrink-0">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -569,7 +569,7 @@ function CreatePedidoModal({ onClose, onCreated, userId }) {
           </div>
 
           {/* Right panel */}
-          <div className="w-72 flex flex-col shrink-0">
+          <div className="w-full lg:w-72 flex flex-col shrink-0">
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {/* Cart items */}
               {cart.length === 0 ? (
