@@ -3,60 +3,200 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper: check if the user is an admin
-    function isAdmin() {
-      return request.auth != null
-        && request.auth.uid != null
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
+    // ─────────────────────────────────────────────────────────
+    // HELPERS
+    // ─────────────────────────────────────────────────────────
 
-    // Helper: check if the user is authenticated
+    // El usuario tiene sesión activa de Firebase Auth
     function isAuthenticated() {
       return request.auth != null && request.auth.uid != null;
     }
 
-    // Users collection: admin can write, owner can read their own, admin can read all
+    // El usuario tiene role == "admin" en su documento de Firestore.
+    // Este get() cuenta como una lectura extra por operación (necesario
+    // para verificar el rol en el servidor).
+    function isAdmin() {
+      return isAuthenticated()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // El documento que se quiere escribir no incluye el campo "role"
+    // (previene que un usuario cambie su propio rol).
+    function roleNotChanged() {
+      return !('role' in request.resource.data);
+    }
+
+    // El role que se intenta escribir al crear la cuenta es solo "user".
+    // Previene la auto-asignación de role "admin" desde el cliente.
+    function roleIsUser() {
+      return request.resource.data.role == 'user';
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // USERS — /users/{userId}
+    //
+    // Almacena uid, email, role y createdAt de cada usuario.
+    // ─────────────────────────────────────────────────────────
     match /users/{userId} {
-      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
-      allow create: if isAuthenticated() && request.auth.uid == userId;
-      allow update, delete: if isAuthenticated() && request.auth.uid == userId;
+      // Cada usuario solo puede leer su propio documento.
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+
+      // Un usuario solo puede crear su propio documento con role = "user".
+      // Impide que un atacante se registre con role = "admin".
+      allow create: if isAuthenticated()
+        && request.auth.uid == userId
+        && roleIsUser();
+
+      // Un usuario puede actualizar su propio documento,
+      // pero NO puede modificar el campo "role".
+      // El cambio de role solo se hace desde Firebase Console o Admin SDK.
+      allow update: if isAuthenticated()
+        && request.auth.uid == userId
+        && roleNotChanged();
+
+      // Nadie puede borrar cuentas desde el cliente.
+      allow delete: if false;
     }
 
-    // Categories collection
+    // ─────────────────────────────────────────────────────────
+    // CATEGORIES — /categories/{categoryId}
+    //
+    // Categorías de productos. Las usa el panel admin y también
+    // el catálogo público (publicProductService.js) sin autenticación.
+    // ─────────────────────────────────────────────────────────
     match /categories/{categoryId} {
-      // Any authenticated user can read categories
-      allow read: if isAuthenticated();
-      // Only admin can create, update, delete
-      allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      // Lectura pública: el catálogo /catalogo necesita los nombres
+      // de categorías sin que el visitante esté autenticado.
+      allow read: if true;
+
+      // Solo el admin puede crear, editar o eliminar categorías.
+      allow create, update, delete: if isAdmin();
     }
 
-    // Products collection (basic rules for now)
+    // ─────────────────────────────────────────────────────────
+    // PRODUCTS — /products/{productId}
+    //
+    // Catálogo de productos con stock, precios y atributos.
+    // ─────────────────────────────────────────────────────────
     match /products/{productId} {
-      allow read: if isAuthenticated();
+      // Lectura pública: el catálogo /catalogo muestra productos
+      // sin autenticación (publicProductService.js).
+      // NOTA: el campo purchasePrice (precio de costo) queda expuesto
+      // a visitantes anónimos. Si esto es un problema, se debe mover
+      // ese campo a una subcolección privada o usar una Cloud Function.
+      allow read: if true;
+
+      // Solo el admin puede crear, editar o eliminar productos.
+      // Incluye transacciones que modifican stock y stockReservado.
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // ORDERS — /orders/{orderId}
+    //
+    // Registro de ventas completadas (POS y pedidos entregados).
+    // Son datos financieros — solo el admin tiene acceso.
+    // ─────────────────────────────────────────────────────────
+    match /orders/{orderId} {
+      // Solo el admin puede leer el historial de ventas.
+      allow read: if isAdmin();
+
+      // Solo el admin puede crear ventas (POS y entrega de pedidos).
       allow create: if isAdmin();
+
+      // Solo el admin puede actualizar una venta (cancelar: cambia
+      // status y cancelledAt, restaura stock).
       allow update: if isAdmin();
+
+      // Las órdenes NUNCA se eliminan para mantener integridad del historial.
+      allow delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // PEDIDOS — /pedidos/{pedidoId}
+    //
+    // Pedidos con ciclo de vida:
+    //   pending → in_progress → delivered | cancelled
+    // ─────────────────────────────────────────────────────────
+    match /pedidos/{pedidoId} {
+      // Solo el admin puede leer pedidos.
+      allow read: if isAdmin();
+
+      // Solo el admin puede crear pedidos.
+      allow create: if isAdmin();
+
+      // Solo el admin puede actualizar el estado del pedido.
+      // Cubre: pending→in_progress, entrega, cancelación.
+      allow update: if isAdmin();
+
+      // Solo el admin puede eliminar pedidos.
+      // El código (pedidoService.js) garantiza que solo se borran
+      // los pedidos con status == "cancelled".
       allow delete: if isAdmin();
     }
 
-    // Orders collection (POS sales + sales generated from delivered pedidos)
-    match /orders/{orderId} {
-      allow read: if isAuthenticated();
+    // ─────────────────────────────────────────────────────────
+    // CLIENTS — /clients/{clientId}
+    //
+    // Base de datos de clientes con datos de contacto e historial.
+    // ─────────────────────────────────────────────────────────
+    match /clients/{clientId} {
+      // Solo el admin puede leer la lista de clientes y sus detalles.
+      allow read: if isAdmin();
+
+      // Solo el admin puede crear clientes.
       allow create: if isAdmin();
+
+      // Solo el admin puede actualizar clientes.
+      // Incluye actualizaciones automáticas de orderCount y totalSpent
+      // dentro de las transacciones de venta.
       allow update: if isAdmin();
+
+      // No existe eliminación de clientes en el código actual.
+      // Se bloquea como medida de seguridad.
       allow delete: if false;
     }
 
-    // Pedidos collection (orders with multi-state lifecycle and stock reservation)
-    match /pedidos/{pedidoId} {
-      allow read: if isAuthenticated();
+    // ─────────────────────────────────────────────────────────
+    // GASTOS OPERATIVOS — /gastos_operativos/{gastoId}
+    //
+    // Registro de gastos internos del negocio (alquiler, servicios, etc.).
+    // Datos financieros muy sensibles — acceso exclusivo al admin.
+    // ─────────────────────────────────────────────────────────
+    match /gastos_operativos/{gastoId} {
+      // Solo el admin puede leer gastos (dashboard y listado).
+      allow read: if isAdmin();
+
+      // Solo el admin puede registrar gastos.
       allow create: if isAdmin();
-      allow update: if isAdmin();
-      allow delete: if false;
+
+      // No existe edición ni eliminación de gastos en el código actual.
+      // Se bloquea explícitamente.
+      allow update, delete: if false;
     }
 
-    // Deny everything else
+    // ─────────────────────────────────────────────────────────
+    // SETTINGS — /settings/{docId}
+    //
+    // Configuración del negocio: nombre, número de WhatsApp.
+    // El catálogo público la usa para el botón de WhatsApp.
+    // ─────────────────────────────────────────────────────────
+    match /settings/{docId} {
+      // Lectura pública: el catálogo necesita el número de WhatsApp
+      // sin que el visitante esté autenticado.
+      allow read: if true;
+
+      // Escritura solo desde Firebase Console o Admin SDK.
+      // Nunca desde el cliente.
+      allow write: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // CATCH-ALL
+    //
+    // Bloquea cualquier colección no listada explícitamente arriba.
+    // Principio de mínimo privilegio: todo está denegado por defecto.
+    // ─────────────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }
