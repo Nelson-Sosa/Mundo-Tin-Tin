@@ -134,16 +134,18 @@ function CartPanel({
         </div>
       </div>
 
-      {/* Zona scrollable: ítems del carrito + controles de venta */}
-      <div className="flex-1 overflow-y-auto min-h-0">
-        {cart.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <ShoppingCart className="h-10 w-10 text-gray-200" />
-            <p className="mt-3 text-sm text-gray-400">Carrito vacío</p>
-            <p className="text-xs text-gray-300">Buscá productos y agregalos acá</p>
-          </div>
-        ) : (
-          <>
+      {/* Zona scrollable en mobile/desktop, fija con scroll interno en tablet */}
+      <div className="flex flex-col flex-1 min-h-0 overflow-y-auto md:overflow-hidden lg:overflow-y-auto bg-white">
+        
+        {/* Cart items list */}
+        <div className="md:flex-1 md:overflow-y-auto lg:flex-none lg:overflow-visible">
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <ShoppingCart className="h-10 w-10 text-gray-200" />
+              <p className="mt-3 text-sm text-gray-400">Carrito vacío</p>
+              <p className="text-xs text-gray-300">Buscá productos y agregalos acá</p>
+            </div>
+          ) : (
             <ul className="divide-y divide-gray-100">
               {cart.map((item) => (
                 <li key={item.productId} className="flex items-center gap-1.5 px-3 py-2 sm:gap-2 sm:px-5 sm:py-3">
@@ -183,102 +185,104 @@ function CartPanel({
                 </li>
               ))}
             </ul>
+          )}
+        </div>
 
-            {/* Controles de venta dentro del scroll: cliente, descuento, pago, resumen */}
-            <div className="border-t border-border bg-white px-4 py-4 space-y-3.5 md:px-5">
-              <div>
-                <label className="text-xs font-medium text-gray-500">Cliente</label>
+        {/* Controles de venta dentro del scroll (fijos en tablet, scrollables en mobile/desktop) */}
+        {cart.length > 0 && (
+          <div className="shrink-0 border-t border-border bg-white px-4 py-4 space-y-3.5 md:px-5 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 lg:flex lg:flex-col lg:space-y-3.5 lg:gap-0">
+            <div>
+              <label className="text-xs font-medium text-gray-500">Cliente</label>
+              <select
+                value={selectedClientId}
+                onChange={(e) => onClientIdChange(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              >
+                <option value="">Cliente general</option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-gray-500">Descuento</label>
+              <div className="mt-1 flex gap-2">
                 <select
-                  value={selectedClientId}
-                  onChange={(e) => onClientIdChange(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  value={discountType}
+                  onChange={(e) => onDiscountTypeChange(e.target.value)}
+                  className="rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-700 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
-                  <option value="">Cliente general</option>
-                  {clients.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
+                  <option value="none">Sin desc.</option>
+                  <option value="percentage">%</option>
+                  <option value="fixed">Fijo</option>
                 </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-medium text-gray-500">Descuento</label>
-                <div className="mt-1 flex gap-2">
-                  <select
-                    value={discountType}
-                    onChange={(e) => onDiscountTypeChange(e.target.value)}
-                    className="rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-700 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                  >
-                    <option value="none">Sin desc.</option>
-                    <option value="percentage">%</option>
-                    <option value="fixed">Fijo</option>
-                  </select>
-                  {discountType !== "none" && (
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        value={discountValue}
-                        onChange={(e) => onDiscountValueChange(e.target.value)}
-                        placeholder={discountType === "percentage" ? "Ej: 10" : "Ej: 5000"}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2.5 pr-8 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-                      />
-                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                        {discountType === "percentage" ? "%" : "Gs"}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                {discount > 0 && (
-                  <p className="mt-1 text-xs text-emerald-600">Descuento: -{formatCurrency(discount)}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="text-xs font-medium text-gray-500">Método de pago</label>
-                <div className="mt-1 flex gap-2">
-                  <button
-                    onClick={() => onPaymentMethodChange("cash")}
-                    className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-medium transition-all ${
-                      paymentMethod === "cash"
-                        ? "border-primary bg-primary-light text-primary"
-                        : "border-gray-200 text-gray-600 hover:border-gray-300"
-                    }`}
-                  >
-                    <Banknote className="h-5 w-5" />
-                    Efectivo
-                  </button>
-                  <button
-                    onClick={() => onPaymentMethodChange("transfer")}
-                    className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-medium transition-all ${
-                      paymentMethod === "transfer"
-                        ? "border-primary bg-primary-light text-primary"
-                        : "border-gray-200 text-gray-600 hover:border-gray-300"
-                    }`}
-                  >
-                    <CreditCard className="h-5 w-5" />
-                    Transferencia
-                  </button>
-                </div>
-              </div>
-
-              <div className="rounded-lg bg-gray-50 p-3 space-y-1.5">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Subtotal</span>
-                  <span className="text-gray-800 font-medium">{formatCurrency(subtotal)}</span>
-                </div>
-                {discount > 0 && (
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">Descuento</span>
-                    <span className="text-red-500 font-medium">-{formatCurrency(discount)}</span>
+                {discountType !== "none" && (
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={discountValue}
+                      onChange={(e) => onDiscountValueChange(e.target.value)}
+                      placeholder={discountType === "percentage" ? "Ej: 10" : "Ej: 5000"}
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2.5 pr-8 text-sm text-gray-800 placeholder-gray-400 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    />
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                      {discountType === "percentage" ? "%" : "Gs"}
+                    </span>
                   </div>
                 )}
-                <div className="flex items-center justify-between border-t border-gray-200 pt-1.5">
-                  <span className="text-base font-bold text-gray-800">Total</span>
-                  <span className="text-lg font-bold text-primary">{formatCurrency(total)}</span>
-                </div>
+              </div>
+              {discount > 0 && (
+                <p className="mt-1 text-xs text-emerald-600">Descuento: -{formatCurrency(discount)}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-gray-500">Método de pago</label>
+              <div className="mt-1 flex gap-2">
+                <button
+                  onClick={() => onPaymentMethodChange("cash")}
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-medium transition-all ${
+                    paymentMethod === "cash"
+                      ? "border-primary bg-primary-light text-primary"
+                      : "border-gray-200 text-gray-600 hover:border-gray-300"
+                  }`}
+                >
+                  <Banknote className="h-5 w-5" />
+                  Efectivo
+                </button>
+                <button
+                  onClick={() => onPaymentMethodChange("transfer")}
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 text-sm font-medium transition-all ${
+                    paymentMethod === "transfer"
+                      ? "border-primary bg-primary-light text-primary"
+                      : "border-gray-200 text-gray-600 hover:border-gray-300"
+                  }`}
+                >
+                  <CreditCard className="h-5 w-5" />
+                  Transferencia
+                </button>
               </div>
             </div>
-          </>
+
+            <div className="rounded-lg bg-gray-50 p-3 space-y-1.5 md:flex md:flex-col md:justify-center lg:block">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500">Subtotal</span>
+                <span className="text-gray-800 font-medium">{formatCurrency(subtotal)}</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">Descuento</span>
+                  <span className="text-red-500 font-medium">-{formatCurrency(discount)}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between border-t border-gray-200 pt-1.5 mt-auto lg:mt-0">
+                <span className="text-base font-bold text-gray-800">Total</span>
+                <span className="text-lg font-bold text-primary">{formatCurrency(total)}</span>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -642,7 +646,7 @@ export default function Ventas() {
               <div className="h-1 w-10 rounded-full bg-gray-300" />
             </div>
             {/* flex-1 min-h-0: garantiza que h-full dentro de CartPanel resuelva a altura acotada */}
-            <div className="flex-1 min-h-0">
+            <div className="flex flex-col flex-1 min-h-0">
               <CartPanel
                 variant="sheet"
                 onClose={() => setCartOpen(false)}
