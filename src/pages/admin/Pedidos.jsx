@@ -25,6 +25,7 @@ import * as pedidoService from "../../services/pedidoService";
 import * as clientService from "../../services/clientService";
 import { getProducts } from "../../services/productService";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { calculateDiscount } from "../../utils/calculateDiscount";
 import PageContainer from "../../components/layout/PageContainer";
 import EmptyState from "../../components/ui/EmptyState";
 import StatCard from "../../components/ui/StatCard";
@@ -395,6 +396,8 @@ function CreatePedidoModal({ onClose, onCreated, userId }) {
   const [cart, setCart] = useState([]);
   const [selectedClientId, setSelectedClientId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [discountType, setDiscountType] = useState("none");
+  const [discountValue, setDiscountValue] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [stockError, setStockError] = useState(null);
@@ -467,6 +470,12 @@ function CreatePedidoModal({ onClose, onCreated, userId }) {
   }
 
   const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+  const discount = useMemo(
+    () => calculateDiscount(subtotal, discountType, discountValue),
+    [subtotal, discountType, discountValue]
+  );
+  const total = subtotal - discount;
+
   const selectedClient = clients.find((c) => c.id === selectedClientId);
 
   async function handleSubmit() {
@@ -479,10 +488,10 @@ function CreatePedidoModal({ onClose, onCreated, userId }) {
           productId, name, sku, unitPrice, quantity, subtotal: st,
         })),
         subtotal,
-        discountType: null,
-        discountValue: 0,
-        discount: 0,
-        total: subtotal,
+        discountType: discountType === "none" ? null : discountType,
+        discountValue: discountType === "none" ? 0 : parseFloat(discountValue) || 0,
+        discount,
+        total,
         paymentMethod: paymentMethod || null,
         clientId: selectedClientId || null,
         clientName: selectedClient?.name || null,
@@ -626,6 +635,40 @@ function CreatePedidoModal({ onClose, onCreated, userId }) {
                 </select>
               </div>
 
+              {/* Discount */}
+              <div>
+                <label className="text-xs font-medium text-gray-500">Descuento</label>
+                <div className="mt-1 flex gap-2">
+                  <select
+                    value={discountType}
+                    onChange={(e) => setDiscountType(e.target.value)}
+                    className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-primary focus:outline-none"
+                  >
+                    <option value="none">Sin desc.</option>
+                    <option value="percentage">%</option>
+                    <option value="fixed">Fijo</option>
+                  </select>
+                  {discountType !== "none" && (
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={discountValue}
+                        onChange={(e) => setDiscountValue(e.target.value)}
+                        placeholder={discountType === "percentage" ? "Ej: 10" : "Ej: 5000"}
+                        className="w-full rounded-lg border border-gray-200 px-3 py-2 pr-8 text-sm text-gray-800 focus:border-primary focus:outline-none"
+                      />
+                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                        {discountType === "percentage" ? "%" : "Gs"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {discount > 0 && (
+                  <p className="mt-1 text-xs text-emerald-600">Descuento: -{formatCurrency(discount)}</p>
+                )}
+              </div>
+
               {/* Notes */}
               <div>
                 <label className="text-xs font-medium text-gray-500">Notas (opcional)</label>
@@ -655,9 +698,21 @@ function CreatePedidoModal({ onClose, onCreated, userId }) {
 
             {/* Footer */}
             <div className="border-t border-border p-4 space-y-3 shrink-0">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Total</span>
-                <span className="font-bold text-gray-900">{formatCurrency(subtotal)}</span>
+              <div className="rounded-lg bg-gray-50 p-3 space-y-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">Subtotal</span>
+                  <span className="text-gray-800 font-medium">{formatCurrency(subtotal)}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">Descuento</span>
+                    <span className="text-danger font-medium">-{formatCurrency(discount)}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between border-t border-gray-200 pt-1.5">
+                  <span className="text-base font-bold text-gray-800">Total</span>
+                  <span className="text-lg font-bold text-primary">{formatCurrency(total)}</span>
+                </div>
               </div>
               <button
                 onClick={handleSubmit}

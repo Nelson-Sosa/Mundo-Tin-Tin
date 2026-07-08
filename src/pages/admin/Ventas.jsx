@@ -7,6 +7,7 @@ import * as orderService from "../../services/orderService";
 import * as clientService from "../../services/clientService";
 import { getCategories } from "../../services/categoryService";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { calculateDiscount } from "../../utils/calculateDiscount";
 import { getThumbImage } from "../../lib/cloudinary";
 import PageContainer from "../../components/layout/PageContainer";
 
@@ -434,15 +435,10 @@ export default function Ventas() {
     [cart]
   );
 
-  const discount = useMemo(() => {
-    if (discountType === "none" || !discountValue) return 0;
-    const val = parseFloat(discountValue);
-    if (isNaN(val) || val <= 0) return 0;
-    if (discountType === "percentage") {
-      return Math.min(subtotal * (val / 100), subtotal);
-    }
-    return Math.min(val, subtotal);
-  }, [subtotal, discountType, discountValue]);
+  const discount = useMemo(
+    () => calculateDiscount(subtotal, discountType, discountValue),
+    [subtotal, discountType, discountValue]
+  );
 
   const total = subtotal - discount;
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
