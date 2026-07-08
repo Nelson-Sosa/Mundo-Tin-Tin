@@ -107,7 +107,7 @@ function CartPanel({
   onRemoveFromCart,
 }) {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 min-h-0 w-full">
       <div className={`flex items-center justify-between border-b border-border ${
         variant === "sheet" ? "px-4 py-3.5" : "px-5 py-4"
       }`}>
@@ -138,7 +138,7 @@ function CartPanel({
       <div className="flex flex-col flex-1 min-h-0 overflow-y-auto md:overflow-hidden lg:overflow-y-auto bg-white">
         
         {/* Cart items list */}
-        <div className="md:flex-1 md:overflow-y-auto lg:flex-none lg:overflow-visible">
+        <div className="md:flex-1 md:min-h-0 md:overflow-y-auto lg:flex-none lg:overflow-visible">
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <ShoppingCart className="h-10 w-10 text-gray-200" />

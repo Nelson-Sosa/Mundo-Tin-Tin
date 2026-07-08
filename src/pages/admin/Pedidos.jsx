@@ -590,7 +590,7 @@ function CreatePedidoModal({ onClose, onCreated, userId }) {
           <div className="w-full md:flex-1 lg:w-72 flex flex-col shrink-0">
             <div className="flex flex-col flex-1 min-h-0 md:overflow-hidden lg:overflow-y-auto">
               {/* Cart items */}
-              <div className="p-4 space-y-3 md:flex-1 md:overflow-y-auto lg:flex-none lg:overflow-visible">
+              <div className="p-4 space-y-3 md:flex-1 md:min-h-0 md:overflow-y-auto lg:flex-none lg:overflow-visible">
                 {cart.length === 0 ? (
                   <p className="text-sm text-gray-400 text-center py-8">Seleccioná productos</p>
                 ) : (
