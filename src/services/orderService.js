@@ -19,6 +19,7 @@ import {
   applyDeliveryStockUpdate,
   getProductRef,
 } from "./stockUtils";
+import { clearDashboardCache } from "./dashboardService";
 
 const ORDERS_COLLECTION = "orders";
 const PRODUCTS_COLLECTION = "products";
@@ -104,6 +105,8 @@ export async function createOrder({ items, subtotal, discountType, discountValue
       transaction.update(doc(db, CLIENTS_COLLECTION, clientId), updates);
     }
   });
+
+  clearDashboardCache();
 
   return { id: orderDocRef.id };
 }
@@ -293,6 +296,8 @@ export async function cancelOrder(orderId, userId) {
       }
     }
   });
+
+  clearDashboardCache();
 
   return { id: orderId };
 }

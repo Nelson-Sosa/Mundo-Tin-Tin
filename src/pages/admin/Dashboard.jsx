@@ -77,11 +77,19 @@ function StatusBadge({ status }) {
 }
 
 const statDefs = [
+  // Rendimiento del día
   { key: "ventasDia", title: "Ventas del día", icon: ShoppingCart, accent: "primary", kind: "currency" },
-  { key: "ventasMes", title: "Ventas del mes", icon: TrendingUp, accent: "rose", kind: "currency" },
-  { key: "ganancias", title: "Ganancias (mes)", icon: DollarSign, accent: "primary", kind: "currency" },
+  { key: "gananciasDia", title: "Ganancias (hoy)", icon: Banknote, accent: "emerald", kind: "currency" },
   { key: "gastosDia", title: "Gastos (hoy)", icon: CreditCard, accent: "rose", kind: "currency" },
-  { key: "productosVendidos", title: "Productos vendidos (mes)", icon: ShoppingBag, accent: "primary", kind: "number" },
+
+  // Rendimiento acumulado
+  { key: "ventasMes", title: "Ventas del mes", icon: TrendingUp, accent: "primary", kind: "currency" },
+  { key: "gananciasMes", title: "Ganancias (mes)", icon: DollarSign, accent: "emerald", kind: "currency" },
+  { key: "gastosSemana", title: "Gastos (semana)", icon: CreditCard, accent: "rose", kind: "currency" },
+  { key: "gastosMes", title: "Gastos (mes)", icon: CreditCard, accent: "rose", kind: "currency" },
+
+  // Inventario
+  { key: "productosVendidos", title: "Prod. vendidos (mes)", icon: ShoppingBag, accent: "primary", kind: "number" },
   { key: "stockBajo", title: "Stock bajo", icon: AlertTriangle, accent: "rose", kind: "number" },
   { key: "agotados", title: "Productos agotados", icon: XCircle, accent: "primary", kind: "number" },
 ];
@@ -165,14 +173,20 @@ export default function Dashboard() {
         {statDefs.map((stat) => {
           let value = null;
 
-          if (!loading && data) {
-            if (stat.key === "ventasDia") value = data.ventasDia?.total ?? 0;
-            else if (stat.key === "ventasMes") value = data.ventasMes?.total ?? 0;
-            else if (stat.key === "ganancias") value = data.ganancias ?? 0;
-            else if (stat.key === "gastosDia") value = data.gastosDia ?? 0;
-            else if (stat.key === "productosVendidos") value = data.productosVendidos ?? 0;
-            else if (stat.key === "stockBajo") value = data.stockBajo ?? 0;
-            else if (stat.key === "agotados") value = data.agotados ?? 0;
+          if (!loading && data && data.metrics) {
+            const m = data.metrics;
+            if (stat.key === "ventasDia") value = m.ventas.dia;
+            else if (stat.key === "gananciasDia") value = m.ganancias.dia;
+            else if (stat.key === "gastosDia") value = m.gastos.dia;
+
+            else if (stat.key === "ventasMes") value = m.ventas.mes;
+            else if (stat.key === "gananciasMes") value = m.ganancias.mes;
+            else if (stat.key === "gastosSemana") value = m.gastos.semana;
+            else if (stat.key === "gastosMes") value = m.gastos.mes;
+
+            else if (stat.key === "productosVendidos") value = m.inventario.productosVendidos;
+            else if (stat.key === "stockBajo") value = m.inventario.stockBajo;
+            else if (stat.key === "agotados") value = m.inventario.agotados;
           }
 
           return (

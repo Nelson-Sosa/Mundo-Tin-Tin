@@ -18,6 +18,7 @@ import {
   applyDeliveryStockUpdate,
   getProductRef,
 } from "./stockUtils";
+import { clearDashboardCache } from "./dashboardService";
 
 const PEDIDOS_COLLECTION = "pedidos";
 const ORDERS_COLLECTION = "orders";
@@ -361,6 +362,8 @@ async function _deliverPedido(pedidoId, paymentMethod, userId) {
       transaction.update(doc(db, CLIENTS_COLLECTION, pedido.clientId), clientUpdates);
     }
   });
+
+  clearDashboardCache();
 
   return { id: pedidoId, saleOrderId: newOrderRef.id };
 }

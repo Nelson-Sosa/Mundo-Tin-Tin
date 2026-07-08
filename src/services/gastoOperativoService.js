@@ -8,6 +8,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
+import { clearDashboardCache } from "./dashboardService";
 
 const COLLECTION = "gastos_operativos";
 
@@ -41,6 +42,8 @@ export async function createGasto(data) {
     fecha: Timestamp.fromDate(new Date(sanitized.fecha)),
     createdAt: Timestamp.fromDate(new Date()),
   });
+
+  clearDashboardCache();
 
   return { id: docRef.id };
 }
