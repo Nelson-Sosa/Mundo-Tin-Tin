@@ -872,9 +872,6 @@ export default function Pedidos() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm("¿Está seguro de eliminar este pedido cancelado?\nEsta acción es permanente y no se puede deshacer.")) {
-      return;
-    }
     setDeleting(true);
     try {
       await pedidoService.deletePedido(id);
