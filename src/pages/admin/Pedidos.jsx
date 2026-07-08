@@ -588,121 +588,128 @@ function CreatePedidoModal({ onClose, onCreated, userId }) {
 
           {/* Right panel */}
           <div className="w-full md:flex-1 lg:w-72 flex flex-col shrink-0">
-            <div className="md:flex-1 overflow-y-auto p-4 space-y-3">
+            <div className="flex flex-col flex-1 min-h-0 md:overflow-hidden lg:overflow-y-auto">
               {/* Cart items */}
-              {cart.length === 0 ? (
-                <p className="text-sm text-gray-400 text-center py-8">Seleccioná productos</p>
-              ) : (
-                <div className="space-y-2">
-                  {cart.map((item) => (
-                    <div key={item.productId} className="flex items-center gap-2 rounded-lg bg-gray-50 px-2.5 py-2">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-gray-800 truncate">{item.name}</p>
-                        <p className="text-xs text-gray-400">{formatCurrency(item.unitPrice)} c/u</p>
+              <div className="p-4 space-y-3 md:flex-1 md:overflow-y-auto lg:flex-none lg:overflow-visible">
+                {cart.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-8">Seleccioná productos</p>
+                ) : (
+                  <div className="space-y-2">
+                    {cart.map((item) => (
+                      <div key={item.productId} className="flex items-center gap-2 rounded-lg bg-gray-50 px-2.5 py-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-gray-800 truncate">{item.name}</p>
+                          <p className="text-xs text-gray-400">{formatCurrency(item.unitPrice)} c/u</p>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button onClick={() => updateQty(item.productId, -1)} className="h-6 w-6 rounded border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-white">
+                            <span className="text-sm leading-none">−</span>
+                          </button>
+                          <span className="w-6 text-center text-xs font-semibold">{item.quantity}</span>
+                          <button onClick={() => updateQty(item.productId, 1)} className="h-6 w-6 rounded border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-white">
+                            <span className="text-sm leading-none">+</span>
+                          </button>
+                          <button onClick={() => setCart((p) => p.filter((i) => i.productId !== item.productId))} className="ml-1 h-6 w-6 rounded flex items-center justify-center text-gray-300 hover:text-danger">
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button onClick={() => updateQty(item.productId, -1)} className="h-6 w-6 rounded border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-white">
-                          <span className="text-sm leading-none">−</span>
-                        </button>
-                        <span className="w-6 text-center text-xs font-semibold">{item.quantity}</span>
-                        <button onClick={() => updateQty(item.productId, 1)} className="h-6 w-6 rounded border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-white">
-                          <span className="text-sm leading-none">+</span>
-                        </button>
-                        <button onClick={() => setCart((p) => p.filter((i) => i.productId !== item.productId))} className="ml-1 h-6 w-6 rounded flex items-center justify-center text-gray-300 hover:text-danger">
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Client */}
-              <div>
-                <label className="text-xs font-medium text-gray-500">Cliente</label>
-                <select
-                  value={selectedClientId}
-                  onChange={(e) => setSelectedClientId(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                >
-                  <option value="">Cliente general</option>
-                  {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </div>
-
-              {/* Payment method (optional) */}
-              <div>
-                <label className="text-xs font-medium text-gray-500">Método de pago (opcional)</label>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                >
-                  <option value="">Definir al entregar</option>
-                  <option value="cash">Efectivo</option>
-                  <option value="transfer">Transferencia</option>
-                </select>
-              </div>
-
-              {/* Discount */}
-              <div>
-                <label className="text-xs font-medium text-gray-500">Descuento</label>
-                <div className="mt-1 flex gap-2">
-                  <select
-                    value={discountType}
-                    onChange={(e) => setDiscountType(e.target.value)}
-                    className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-primary focus:outline-none"
-                  >
-                    <option value="none">Sin desc.</option>
-                    <option value="percentage">%</option>
-                    <option value="fixed">Fijo</option>
-                  </select>
-                  {discountType !== "none" && (
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        value={discountValue}
-                        onChange={(e) => setDiscountValue(e.target.value)}
-                        placeholder={discountType === "percentage" ? "Ej: 10" : "Ej: 5000"}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 pr-8 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                      />
-                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
-                        {discountType === "percentage" ? "%" : "Gs"}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                {discount > 0 && (
-                  <p className="mt-1 text-xs text-emerald-600">Descuento: -{formatCurrency(discount)}</p>
+                    ))}
+                  </div>
                 )}
               </div>
 
-              {/* Notes */}
-              <div>
-                <label className="text-xs font-medium text-gray-500">Notas (opcional)</label>
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  rows={2}
-                  placeholder="Ej: Entregar a las 18hs, piso 3…"
-                  className="mt-1 w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
-                />
-              </div>
+              {/* Form elements */}
+              <div className="p-4 pt-0 md:pt-4 md:border-t md:border-border shrink-0 lg:border-t-0 lg:pt-0">
+                <div className="flex flex-col space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 lg:flex lg:flex-col lg:space-y-3 lg:gap-0">
+                  {/* Client */}
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">Cliente</label>
+                    <select
+                      value={selectedClientId}
+                      onChange={(e) => setSelectedClientId(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
+                    >
+                      <option value="">Cliente general</option>
+                      {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                  </div>
 
-              {/* Stock error */}
-              {stockError && (
-                <div className="rounded-lg bg-red-50 px-3 py-2.5">
-                  <p className="text-xs font-semibold text-danger mb-1 flex items-center gap-1">
-                    <AlertTriangle className="h-3.5 w-3.5" /> Stock insuficiente
-                  </p>
-                  {stockError.map((e, i) => (
-                    <p key={i} className="text-xs text-danger">
-                      <span className="font-medium">{e.name}</span>: disponible {e.disponible}, pedido {e.solicitado}
-                    </p>
-                  ))}
+                  {/* Payment method (optional) */}
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">Método de pago (opcional)</label>
+                    <select
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
+                    >
+                      <option value="">Definir al entregar</option>
+                      <option value="cash">Efectivo</option>
+                      <option value="transfer">Transferencia</option>
+                    </select>
+                  </div>
+
+                  {/* Discount */}
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">Descuento</label>
+                    <div className="mt-1 flex gap-2">
+                      <select
+                        value={discountType}
+                        onChange={(e) => setDiscountType(e.target.value)}
+                        className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 focus:border-primary focus:outline-none"
+                      >
+                        <option value="none">Sin desc.</option>
+                        <option value="percentage">%</option>
+                        <option value="fixed">Fijo</option>
+                      </select>
+                      {discountType !== "none" && (
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            value={discountValue}
+                            onChange={(e) => setDiscountValue(e.target.value)}
+                            placeholder={discountType === "percentage" ? "Ej: 10" : "Ej: 5000"}
+                            className="w-full rounded-lg border border-gray-200 px-3 py-2 pr-8 text-sm text-gray-800 focus:border-primary focus:outline-none"
+                          />
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                            {discountType === "percentage" ? "%" : "Gs"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {discount > 0 && (
+                      <p className="mt-1 text-xs text-emerald-600">Descuento: -{formatCurrency(discount)}</p>
+                    )}
+                  </div>
+
+                  {/* Notes */}
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">Notas (opcional)</label>
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      rows={2}
+                      placeholder="Ej: Entregar a las 18hs, piso 3…"
+                      className="mt-1 w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 focus:border-primary focus:outline-none"
+                    />
+                  </div>
+
+                  {/* Stock error */}
+                  {stockError && (
+                    <div className="md:col-span-2 lg:col-span-1 rounded-lg bg-red-50 px-3 py-2.5">
+                      <p className="text-xs font-semibold text-danger mb-1 flex items-center gap-1">
+                        <AlertTriangle className="h-3.5 w-3.5" /> Stock insuficiente
+                      </p>
+                      {stockError.map((e, i) => (
+                        <p key={i} className="text-xs text-danger">
+                          <span className="font-medium">{e.name}</span>: disponible {e.disponible}, pedido {e.solicitado}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Footer */}
