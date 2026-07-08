@@ -11,6 +11,7 @@ import {
   runTransaction,
   serverTimestamp,
   Timestamp,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 import {
@@ -366,6 +367,26 @@ async function _deliverPedido(pedidoId, paymentMethod, userId) {
   clearDashboardCache();
 
   return { id: pedidoId, saleOrderId: newOrderRef.id };
+}
+
+// ─────────────────────────────────────────────────────────────
+//  DELETE CANCELLED PEDIDO
+// ─────────────────────────────────────────────────────────────
+export async function deletePedido(pedidoId) {
+  const pedidoRef = doc(db, PEDIDOS_COLLECTION, pedidoId);
+  const snap = await getDoc(pedidoRef);
+  
+  if (!snap.exists()) {
+    throw new Error("PEDIDO_NOT_FOUND");
+  }
+  
+  const pedido = snap.data();
+  if (pedido.status !== PEDIDO_STATUS.CANCELLED) {
+    throw new Error("ONLY_CANCELLED_CAN_BE_DELETED");
+  }
+  
+  await deleteDoc(pedidoRef);
+  return { id: pedidoId };
 }
 
 // ─────────────────────────────────────────────────────────────

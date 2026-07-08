@@ -138,7 +138,7 @@ function PaymentBadge({ method }) {
 // ─────────────────────────────────────────────────────────────
 //  Detail Modal
 // ─────────────────────────────────────────────────────────────
-function PedidoDetailModal({ pedido, onClose }) {
+function PedidoDetailModal({ pedido, onClose, onDelete, deleting }) {
   if (!pedido) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -216,8 +216,17 @@ function PedidoDetailModal({ pedido, onClose }) {
           </div>
         </div>
 
-        <div className="border-t border-border px-6 py-3">
-          <button onClick={onClose} className="w-full rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200">
+        <div className="border-t border-border px-6 py-3 flex gap-3">
+          {pedido.status === "cancelled" && (
+            <button
+              onClick={() => onDelete(pedido.id)}
+              disabled={deleting}
+              className="flex-1 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-100 disabled:opacity-50 transition-colors"
+            >
+              {deleting ? "Eliminando..." : "Eliminar pedido"}
+            </button>
+          )}
+          <button onClick={onClose} disabled={deleting} className="flex-1 rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50 transition-colors">
             Cerrar
           </button>
         </div>
@@ -749,6 +758,7 @@ export default function Pedidos() {
 
   const [delivering, setDelivering] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadPedidos = useCallback(
     async (reset = false, cursor = null) => {
@@ -849,14 +859,33 @@ export default function Pedidos() {
       await pedidoService.updatePedidoStatus(cancelTarget.id, "cancelled", { userId: user?.uid });
       toast.success("Pedido cancelado — stock liberado");
       setPedidos((prev) =>
-        prev.map((p) => p.id === cancelTarget.id ? { ...p, status: "cancelled" } : p),
+        prev.map((p) => p.id === cancelTarget.id ? { ...p, status: "cancelled" } : p)
       );
       setCancelTarget(null);
       loadSummary();
     } catch (err) {
       toast.error("Error al cancelar el pedido");
+      console.error(err);
     } finally {
       setCancelling(false);
+    }
+  }
+
+  async function handleDelete(id) {
+    if (!window.confirm("¿Está seguro de eliminar este pedido cancelado?\nEsta acción es permanente y no se puede deshacer.")) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      await pedidoService.deletePedido(id);
+      toast.success("Pedido eliminado permanentemente");
+      setPedidos((prev) => prev.filter((p) => p.id !== id));
+      setSelectedPedido(null);
+    } catch (err) {
+      toast.error(err.message === "ONLY_CANCELLED_CAN_BE_DELETED" ? "Solo se pueden eliminar pedidos cancelados" : "Error al eliminar el pedido");
+      console.error(err);
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -940,7 +969,7 @@ export default function Pedidos() {
           <EmptyState
             icon={ClipboardList}
             title="No hay pedidos"
-            description="Los pedidos que crees aparecerán acá"
+            description="Los pedidos que crees aparecerían acá"
           />
         ) : (
           <div className="overflow-x-auto">
@@ -1099,7 +1128,12 @@ export default function Pedidos() {
 
       {/* Modals */}
       {selectedPedido && (
-        <PedidoDetailModal pedido={selectedPedido} onClose={() => setSelectedPedido(null)} />
+        <PedidoDetailModal
+          pedido={selectedPedido}
+          onClose={() => setSelectedPedido(null)}
+          onDelete={handleDelete}
+          deleting={deleting}
+        />
       )}
       {deliverTarget && (
         <DeliverConfirmModal
